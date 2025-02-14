@@ -28,7 +28,19 @@ const routes = [
     path: '/articles',
     name: 'ArticleList',
     component: () => import('../views/ArticleList/ArticleList.vue')
+  },
+  {
+    path: '/range',
+    name: 'Range',
+    component: () => import('../views/range/range.vue')
+  },
+  {
+    path: '/newsType',
+    name: 'NewsType',
+    component: () => import('../views/newsType/newsType.vue')
   }
+
+
 //   {
 //     path: '*',
 //     name: 'NotFound',

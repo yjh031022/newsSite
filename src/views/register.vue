@@ -8,28 +8,14 @@
         
         <form class="register-form" @submit.prevent="handleRegister">
           <div class="form-group">
-            <label for="username">用户名</label>
+            <label for="account">账号</label>
             <div class="input-with-icon">
               <i class="fas fa-user"></i>
               <input 
                 type="text" 
-                id="username" 
-                v-model="registerForm.username"
-                placeholder="请设置用户名"
-                required
-              >
-            </div>
-          </div>
-  
-          <div class="form-group">
-            <label for="email">邮箱</label>
-            <div class="input-with-icon">
-              <i class="fas fa-envelope"></i>
-              <input 
-                type="email" 
-                id="email" 
-                v-model="registerForm.email"
-                placeholder="请输入邮箱"
+                id="account" 
+                v-model="registerForm.account"
+                placeholder="请设置账号"
                 required
               >
             </div>
@@ -64,16 +50,20 @@
           </div>
   
           <div class="form-agreement">
-            <label class="agreement-checkbox">
-              <input type="checkbox" v-model="registerForm.agreement" required>
-              <span>我已阅读并同意 <a href="#">服务条款</a> 和 <a href="#">隐私政策</a></span>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                v-model="registerForm.agreement"
+                required
+              >
+              <span>我已阅读并同意服务条款和隐私政策</span>
             </label>
           </div>
   
           <button type="submit" class="register-btn">注册</button>
   
           <div class="login-link">
-            已有账号？ <a @click="goToLogin">立即登录</a>
+            已有账号？<a href="/login">立即登录</a>
           </div>
         </form>
       </div>
@@ -86,8 +76,7 @@
     data() {
       return {
         registerForm: {
-          username: '',
-          email: '',
+          account: '',
           password: '',
           confirmPassword: '',
           agreement: false
@@ -96,11 +85,11 @@
     },
     methods: {
       handleRegister() {
-        // 处理注册逻辑
-        console.log('注册表单提交', this.registerForm)
-      },
-      goToLogin() {
-        this.$router.push('/login')
+        if (this.registerForm.password !== this.registerForm.confirmPassword) {
+          alert('两次输入的密码不一致');
+          return;
+        }
+        console.log('注册表单提交', this.registerForm);
       }
     }
   }
@@ -118,8 +107,8 @@
   
   .register-box {
     background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     padding: 40px;
     width: 100%;
     max-width: 400px;
@@ -127,32 +116,40 @@
   
   .register-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
   
   .register-header h2 {
     color: #333;
+    font-size: 28px;
     margin-bottom: 10px;
+    font-weight: 600;
   }
   
   .register-header p {
     color: #666;
-    font-size: 0.9rem;
+    font-size: 16px;
   }
   
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   
   .form-group label {
-    display: block;
-    margin-bottom: 8px;
+    min-width: 70px;
+    text-align: right;
     color: #333;
-    font-size: 0.9rem;
+    font-size: 14px;
+    font-weight: 500;
   }
   
   .input-with-icon {
     position: relative;
+    flex: 1;
+    max-width: 240px;
   }
   
   .input-with-icon i {
@@ -166,48 +163,50 @@
   .input-with-icon input {
     width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
   }
   
   .input-with-icon input:focus {
     border-color: #4CAF50;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
   }
   
   .form-agreement {
-    margin-bottom: 20px;
+    margin-left: 80px;
+    margin-bottom: 25px;
   }
   
-  .agreement-checkbox {
+  .checkbox-label {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     color: #666;
-    font-size: 0.9rem;
+    font-size: 14px;
+    cursor: pointer;
   }
   
-  .agreement-checkbox a {
-    color: #4CAF50;
-    text-decoration: none;
-  }
-  
-  .agreement-checkbox a:hover {
-    text-decoration: underline;
+  .checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
   }
   
   .register-btn {
-    width: 100%;
+    margin-left: 80px;
+    width: calc(100% - 80px);
     padding: 12px;
     background: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
   }
   
   .register-btn:hover {
@@ -215,19 +214,52 @@
   }
   
   .login-link {
-    text-align: center;
+    margin-left: 80px;
     margin-top: 20px;
     color: #666;
-    font-size: 0.9rem;
+    font-size: 14px;
+    text-align: center;
   }
   
   .login-link a {
     color: #4CAF50;
     text-decoration: none;
-    cursor: pointer;
+    font-weight: 500;
   }
   
   .login-link a:hover {
     text-decoration: underline;
+  }
+  
+  @media (max-width: 576px) {
+    .register-box {
+      padding: 30px 20px;
+      margin: 0 15px;
+    }
+  
+    .input-with-icon {
+      max-width: 100%;
+    }
+  
+    .form-group {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .form-group label {
+      min-width: auto;
+      text-align: left;
+    }
+  
+    .form-agreement,
+    .register-btn,
+    .login-link {
+      margin-left: 0;
+    }
+  
+    .register-btn {
+      width: 100%;
+    }
   }
   </style>

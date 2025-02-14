@@ -10,8 +10,8 @@
       <div class="nav-buttons">
         <button class="btn-register" @click="goToRegister">用户注册</button>
         <button class="btn-login" @click="goToLogin">用户登录</button>
-        <button class="btn-category">新闻分类</button>
-        <button class="btn-ranking">排行榜</button>
+        <button class="btn-category" @click="gotoNewsType">新闻分类</button>
+        <button class="btn-ranking" @click="gotoRange">排行榜</button>
       </div>
     </div>
 
@@ -61,7 +61,13 @@ export default {
     },
     goToLogin() {
       this.$router.push('/login')
-    }
+    },
+    gotoRange() {
+      this.$router.push('/range')
+    },
+    gotoNewsType() {
+      this.$router.push('/newsType')
+    },
   }
 }
 </script>
@@ -70,6 +76,7 @@ export default {
 .home-container {
   width: 100%;
   min-height: 100vh;
+  background-color: #f8f9fa;
 }
 
 .header {
@@ -78,12 +85,22 @@ export default {
   align-items: center;
   padding: 1rem 2rem;
   background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo {
-  color: #4CAF50;
+  color: #2196F3;
   font-size: 1.5rem;
   font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: #1976D2;
 }
 
 .search-box {
@@ -92,38 +109,71 @@ export default {
 }
 
 .search-box input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
   width: 300px;
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 5px rgba(33,150,243,0.3);
 }
 
 .search-btn {
-  background-color: #FF6B35;
+  background-color: #2196F3;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.5rem 1.2rem;
+  border-radius: 25px;
   margin-left: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: #1976D2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .nav-buttons button {
   margin-left: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.btn-register { background-color: #9C27B0; color: white; }
-.btn-login { background-color: #4CAF50; color: white; }
-.btn-category { background-color: #9C27B0; color: white; }
-.btn-ranking { background-color: #4CAF50; color: white; }
+.btn-register { 
+  background-color: #673AB7; 
+  color: white; 
+}
+.btn-login { 
+  background-color: #2196F3; 
+  color: white; 
+}
+.btn-category { 
+  background-color: #FF5722; 
+  color: white; 
+}
+.btn-ranking { 
+  background-color: #4CAF50; 
+  color: white; 
+}
+
+.nav-buttons button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
 .banner {
-  background-color: #FFF3E0;
-  padding: 2rem;
+  background: linear-gradient(135deg, #1976D2, #64B5F6);
+  padding: 3rem 2rem;
   margin-bottom: 2rem;
+  color: white;
 }
 
 .banner-content {
@@ -138,31 +188,49 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .news-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .news-image {
   height: 200px;
-  background-color: #f5f5f5;
+  background-color: #e0e0e0;
+  transition: all 0.3s ease;
 }
 
 .news-content {
-  padding: 1rem;
+  padding: 1.2rem;
+}
+
+.news-content h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .news-source {
-  color: #666;
+  color: #757575;
   font-size: 0.9rem;
 }
 
 .section-title {
   padding: 1rem 2rem;
   color: #333;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 1rem 0;
 }
 </style>

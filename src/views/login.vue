@@ -1,204 +1,193 @@
 <template>
-	<div class="login-container">
-	  <div class="login-box">
-		<div class="login-header">
-		  <h2>用户登录</h2>
-		  <p>欢迎回来，请登录您的账号</p>
+	<div class="login-page">
+		<div class="background-animation">
+			<div v-for="i in 50" 
+				 :key="i" 
+				 class="dot"
+				 :style="{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 3}s` }">
+			</div>
 		</div>
-		
-		<form class="login-form" @submit.prevent="handleLogin">
-		  <div class="form-group">
-			<label for="username">用户名</label>
-			<div class="input-with-icon">
-			  <i class="fas fa-user"></i>
-			  <input 
-				type="text" 
-				id="username" 
-				v-model="loginForm.username"
-				placeholder="请输入用户名"
-				required
-			  >
+
+		<div class="login-container">
+			<h1 class="login-title">登录</h1>
+			<div class="input-group">
+				<input 
+					type="text" 
+					v-model="formData.username" 
+					placeholder="请输入用户名"
+				>
 			</div>
-		  </div>
-  
-		  <div class="form-group">
-			<label for="password">密码</label>
-			<div class="input-with-icon">
-			  <i class="fas fa-lock"></i>
-			  <input 
-				type="password" 
-				id="password" 
-				v-model="loginForm.password"
-				placeholder="请输入密码"
-				required
-			  >
+			<div class="input-group">
+				<input 
+					type="password" 
+					v-model="formData.password" 
+					placeholder="请输入密码"
+				>
 			</div>
-		  </div>
-  
-		  <div class="form-options">
-			<label class="remember-me">
-			  <input type="checkbox" v-model="loginForm.remember">
-			  <span>记住我</span>
-			</label>
-			<a href="#" class="forgot-password">忘记密码？</a>
-		  </div>
-  
-		  <button type="submit" class="login-btn">登录</button>
-  
-		  <div class="register-link">
-			还没有账号？ <a @click="goToRegister">立即注册</a>
-		  </div>
-		</form>
-	  </div>
+			<div class="input-group captcha-group">
+				<input 
+					type="text" 
+					v-model="formData.captcha" 
+					placeholder="请输入验证码" 
+					class="captcha-input"
+				>
+				<div class="captcha-image" @click="refreshCaptcha">{{ captchaText }}</div>
+			</div>
+			<button class="login-btn" @click="handleLogin">立即登录</button>
+		</div>
 	</div>
-  </template>
-  
-  <script>
-  export default {
+</template>
+
+<script>
+export default {
 	name: 'Login',
 	data() {
-	  return {
-		loginForm: {
-		  username: '',
-		  password: '',
-		  remember: false
+		return {
+			formData: {
+				username: '',
+				password: '',
+				captcha: ''
+			},
+			captchaText: 'tC83'
 		}
-	  }
 	},
 	methods: {
-	  handleLogin() {
-		// 处理登录逻辑
-		console.log('登录表单提交', this.loginForm)
-	  },
-	  goToRegister() {
-		this.$router.push('/register')
-	  }
+		handleLogin() {
+			// 验证表单
+			if (!this.formData.username) {
+				this.$message.error('请输入用户名')
+				return
+			}
+			if (!this.formData.password) {
+				this.$message.error('请输入密码')
+				return
+			}
+			if (!this.formData.captcha) {
+				this.$message.error('请输入验证码')
+				return
+			}
+
+			// 这里添加登录逻辑
+			console.log('登录信息：', this.formData)
+		},
+		refreshCaptcha() {
+			// 这里添加刷新验证码的逻辑
+			this.captchaText = Math.random().toString(36).substr(2, 4)
+		}
 	}
-  }
-  </script>
-  
-  <style scoped>
-  .login-container {
+}
+</script>
+
+<style scoped>
+.login-page {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	min-height: 100vh;
+	background: linear-gradient(45deg, #006994, #00a6c4);
+	font-family: "Microsoft YaHei", sans-serif;
+}
+
+.login-container {
+	background: rgba(255, 255, 255, 0.1);
+	padding: 40px;
+	border-radius: 10px;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+	width: 320px;
+	position: relative;
+	z-index: 1;
+}
+
+.login-title {
+	color: white;
+	text-align: center;
+	font-size: 24px;
+	margin-bottom: 30px;
+}
+
+.input-group {
+	margin-bottom: 20px;
+}
+
+input {
+	width: 100%;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	background: rgba(255, 255, 255, 0.9);
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
+.captcha-group {
+	display: flex;
+	gap: 10px;
+}
+
+.captcha-input {
+	flex: 1;
+}
+
+.captcha-image {
+	width: 100px;
+	height: 40px;
+	background: white;
+	border-radius: 5px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-	padding: 20px;
-  }
-  
-  .login-box {
-	background: white;
-	border-radius: 10px;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-	padding: 40px;
-	width: 100%;
-	max-width: 400px;
-  }
-  
-  .login-header {
-	text-align: center;
-	margin-bottom: 30px;
-  }
-  
-  .login-header h2 {
-	color: #333;
-	margin-bottom: 10px;
-  }
-  
-  .login-header p {
-	color: #666;
-	font-size: 0.9rem;
-  }
-  
-  .form-group {
-	margin-bottom: 20px;
-  }
-  
-  .form-group label {
-	display: block;
-	margin-bottom: 8px;
-	color: #333;
-	font-size: 0.9rem;
-  }
-  
-  .input-with-icon {
-	position: relative;
-  }
-  
-  .input-with-icon i {
-	position: absolute;
-	left: 12px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: #666;
-  }
-  
-  .input-with-icon input {
-	width: 100%;
-	padding: 12px 12px 12px 40px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	font-size: 1rem;
-	transition: border-color 0.3s;
-  }
-  
-  .input-with-icon input:focus {
-	border-color: #4CAF50;
-	outline: none;
-  }
-  
-  .form-options {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
-  }
-  
-  .remember-me {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #666;
-	font-size: 0.9rem;
-  }
-  
-  .forgot-password {
-	color: #4CAF50;
-	text-decoration: none;
-	font-size: 0.9rem;
-  }
-  
-  .login-btn {
+	cursor: pointer;
+	font-size: 16px;
+	user-select: none;
+}
+
+.login-btn {
 	width: 100%;
 	padding: 12px;
-	background: #4CAF50;
-	color: white;
 	border: none;
 	border-radius: 5px;
-	font-size: 1rem;
+	background: #0088cc;
+	color: white;
+	font-size: 16px;
 	cursor: pointer;
-	transition: background-color 0.3s;
-  }
-  
-  .login-btn:hover {
-	background: #45a049;
-  }
-  
-  .register-link {
-	text-align: center;
-	margin-top: 20px;
-	color: #666;
-	font-size: 0.9rem;
-  }
-  
-  .register-link a {
-	color: #4CAF50;
-	text-decoration: none;
-	cursor: pointer;
-  }
-  
-  .register-link a:hover {
-	text-decoration: underline;
-  }
-  </style>
+	transition: background 0.3s;
+}
+
+.login-btn:hover {
+	background: #006699;
+}
+
+.background-animation {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: 0;
+}
+
+.dot {
+	position: absolute;
+	width: 2px;
+	height: 10px;
+	background: rgba(255, 255, 255, 0.2);
+	animation: fall 3s linear infinite;
+}
+
+@keyframes fall {
+	0% {
+		transform: translateY(-100%);
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(100vh);
+		opacity: 0;
+	}
+}
+</style>
