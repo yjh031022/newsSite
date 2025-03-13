@@ -6,7 +6,7 @@
       <router-link to="/about">关于</router-link>
     </nav> -->
     <!-- 替换原有的 HelloWorld 组件为路由视图 -->
-    <router-view/>
+    <router-view></router-view>
   </div>
 </template>
 
