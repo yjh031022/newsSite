@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/home/home.vue'
 import Category from '../views/category/category.vue'
+import NewsDetail from '../views/NewsDetail/newsDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/category/:id',
     name: 'Category',
     component: Category
+  },
+  {
+    path: '/news-detail/:id',
+    name: 'NewsDetail',
+    component: NewsDetail
   },
   {
     path: '/register',

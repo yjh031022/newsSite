@@ -1,70 +1,96 @@
 <template>
   <div class="category-container">
-    <!-- 顶部分类标题 -->
-    <div class="category-header">
+    <!-- 顶部分类标题 - 添加动画效果 -->
+    <div class="category-header animate-in">
       <h1 class="category-title">
-        <i class="fas" :class="getCategoryIcon"></i>
+        <div class="icon-wrapper">
+          <i class="fas" :class="getCategoryIcon"></i>
+        </div>
         {{ categoryName }}
       </h1>
       <div class="category-stats">
-        <span><i class="far fa-newspaper"></i> {{ totalNews }} 篇文章</span>
-        <span><i class="far fa-eye"></i> {{ totalViews }} 次浏览</span>
+        <span class="stat-item">
+          <i class="far fa-newspaper"></i>
+          <span class="stat-value">{{ totalNews }}</span>
+          篇文章
+        </span>
+        <span class="stat-item">
+          <i class="far fa-eye"></i>
+          <span class="stat-value">{{ totalViews }}</span>
+          次浏览
+        </span>
       </div>
     </div>
 
-    <!-- 新闻列表 -->
+    <!-- 新闻内容区域 -->
     <div class="news-content">
       <!-- 左侧新闻列表 -->
       <div class="main-news-list">
-        <div class="news-item" v-for="(item, index) in newsList" :key="index" @click="goToDetail(item.id)">
-          <div class="news-item-content">
-            <h3 class="news-title">{{ item.title }}</h3>
-            <p class="news-brief">{{ item.brief }}</p>
-            <div class="news-meta">
-              <span class="time"><i class="far fa-clock"></i> {{ item.publishTime }}</span>
-              <span class="views"><i class="far fa-eye"></i> {{ item.views }}</span>
-              <span class="comments"><i class="far fa-comment"></i> {{ item.comments }}</span>
-              <span class="source">{{ item.source }}</span>
+        <div class="news-grid">
+          <div class="news-item" 
+               v-for="(item, index) in newsList" 
+               :key="index" 
+               @click="goToDetail(item.id)"
+               :style="{ animationDelay: `${index * 0.1}s` }">
+            <div class="news-image-wrapper">
+              <div class="news-image" v-if="item.image">
+                <img :src="item.image" :alt="item.title">
+              </div>
+              <div class="news-source-badge">{{ item.source }}</div>
+            </div>
+            <div class="news-item-content">
+              <h3 class="news-title">{{ item.title }}</h3>
+              <div class="news-meta">
+                <span class="time">
+                  <i class="far fa-clock pulse"></i>
+                  {{ item.publishTime }}
+                </span>
+                <span class="views">
+                  <i class="far fa-eye"></i>
+                  {{ item.views }}
+                </span>
+              </div>
             </div>
           </div>
-          <div class="news-image" v-if="item.image">
-            <img :src="item.image" :alt="item.title">
-          </div>
-        </div>
-        
-        <!-- 分页器 -->
-        <div class="pagination">
-          <button class="page-btn" :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
-          <button class="page-btn" :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
-            <i class="fas fa-chevron-right"></i>
-          </button>
         </div>
       </div>
 
       <!-- 右侧边栏 -->
       <div class="sidebar">
         <!-- 热门排行 -->
-        <div class="sidebar-section">
-          <h3><i class="fas fa-fire"></i> 热门排行</h3>
+        <div class="sidebar-section hot-news-section">
+          <h3>
+            <i class="fas fa-fire animated-fire"></i>
+            热门排行
+          </h3>
           <div class="hot-news-list">
-            <div class="hot-news-item" v-for="(item, index) in hotNews" :key="index">
+            <div class="hot-news-item" 
+                 v-for="(item, index) in hotNews" 
+                 :key="index"
+                 :style="{ animationDelay: `${index * 0.1}s` }">
               <span class="rank-number" :class="{ 'top-rank': index < 3 }">{{ index + 1 }}</span>
               <div class="hot-news-content">
                 <h4>{{ item.title }}</h4>
-                <span class="view-count"><i class="far fa-eye"></i> {{ item.views }}</span>
+                <span class="view-count">
+                  <i class="far fa-eye"></i>
+                  {{ item.views }}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 相关话题 -->
-        <div class="sidebar-section">
-          <h3><i class="fas fa-hashtag"></i> 相关话题</h3>
+        <div class="sidebar-section topics-section">
+          <h3>
+            <i class="fas fa-hashtag rotating"></i>
+            相关话题
+          </h3>
           <div class="topic-list">
-            <a class="topic-tag" v-for="(topic, index) in relatedTopics" :key="index">
+            <a class="topic-tag" 
+               v-for="(topic, index) in relatedTopics" 
+               :key="index"
+               :style="{ animationDelay: `${index * 0.1}s` }">
               # {{ topic }}
             </a>
           </div>
@@ -87,15 +113,84 @@ export default {
       newsList: [
         {
           id: 1,
-          title: '示例新闻标题1',
-          brief: '这是一段新闻简介，描述新闻的主要内容...',
+          title: '重要新闻标题1：国务院最新政策解读与展望',
           publishTime: '2小时前',
           views: 1234,
-          comments: 56,
           source: '新华网',
-          image: 'https://picsum.photos/200/150'
+          image: 'https://picsum.photos/400/300?random=1'
         },
-        // 添加更多新闻项...
+        {
+          id: 2,
+          title: '重要新闻标题2：经济发展新动向分析报告',
+          publishTime: '3小时前',
+          views: 2345,
+          source: '人民日报',
+          image: 'https://picsum.photos/400/300?random=2'
+        },
+        {
+          id: 3,
+          title: '重要新闻标题3：科技创新引领产业升级',
+          publishTime: '4小时前',
+          views: 3456,
+          source: '央视新闻',
+          image: 'https://picsum.photos/400/300?random=3'
+        },
+        {
+          id: 4,
+          title: '重要新闻标题4：教育改革最新进展报道',
+          publishTime: '5小时前',
+          views: 4567,
+          source: '环球时报',
+          image: 'https://picsum.photos/400/300?random=4'
+        },
+        {
+          id: 5,
+          title: '重要新闻标题5：医疗健康领域重大突破',
+          publishTime: '6小时前',
+          views: 5678,
+          source: '科技日报',
+          image: 'https://picsum.photos/400/300?random=5'
+        },
+        {
+          id: 6,
+          title: '重要新闻标题6：文化产业发展新趋势',
+          publishTime: '7小时前',
+          views: 6789,
+          source: '文汇报',
+          image: 'https://picsum.photos/400/300?random=6'
+        },
+        {
+          id: 7,
+          title: '重要新闻标题7：体育赛事最新战报',
+          publishTime: '8小时前',
+          views: 7890,
+          source: '体坛周报',
+          image: 'https://picsum.photos/400/300?random=7'
+        },
+        {
+          id: 8,
+          title: '重要新闻标题8：环保事业新进展',
+          publishTime: '9小时前',
+          views: 8901,
+          source: '中国日报',
+          image: 'https://picsum.photos/400/300?random=8'
+        },
+        {
+          id: 9,
+          title: '重要新闻标题9：金融市场最新动态',
+          publishTime: '10小时前',
+          views: 9012,
+          source: '经济日报',
+          image: 'https://picsum.photos/400/300?random=9'
+        },
+        {
+          id: 10,
+          title: '重要新闻标题10：社会民生热点关注',
+          publishTime: '11小时前',
+          views: 10123,
+          source: '光明日报',
+          image: 'https://picsum.photos/400/300?random=10'
+        }
       ],
       hotNews: [
         {
@@ -148,7 +243,12 @@ export default {
       this.categoryName = categoryMap[categoryId] || '未知分类';
     },
     goToDetail(id) {
-      this.$router.push(`/news-detail/${id}`)
+      this.$router.push({
+        name: 'NewsDetail',
+        params: { id: id }
+      }).catch(err => {
+        console.error('Navigation failed:', err)
+      });
     },
     changePage(page) {
       this.currentPage = page
@@ -174,279 +274,272 @@ export default {
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
 }
 
+/* 添加入场动画 */
+.animate-in {
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .category-header {
   background: rgba(255, 255, 255, 0.95);
   padding: 30px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-radius: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .category-title {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
-.category-title i {
-  color: #2196F3;
+.icon-wrapper {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #2196F3, #1565C0);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper i {
+  color: white;
+  font-size: 1.5rem;
 }
 
 .category-stats {
   display: flex;
-  gap: 20px;
+  gap: 30px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #666;
+  font-size: 1.1rem;
 }
 
-.category-stats span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.news-content {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.main-news-list {
-  background: #fff;
-  border-radius: 8px;
-  padding: 0 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.news-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 24px 0;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.news-item:hover {
-  background: rgba(248, 249, 250, 0.8);
-}
-
-.news-item-content {
-  flex: 1;
-  padding-right: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.news-title {
-  font-size: 18px;
-  color: #333;
-  font-weight: 500;
-  margin-bottom: 12px;
-  line-height: 1.5;
-}
-
-.news-brief {
-  color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.news-meta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: #999;
-  font-size: 13px;
-}
-
-.news-meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.news-meta i {
-  font-size: 14px;
-}
-
-.news-meta .source {
+.stat-value {
+  font-weight: 600;
   color: #2196F3;
 }
 
-.news-image {
-  width: 180px;
-  height: 120px;
-  border-radius: 4px;
+/* 新闻网格样式优化 */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.news-item {
+  background: white;
+  border-radius: 15px;
   overflow: hidden;
-  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.news-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.news-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-image {
+  height: 200px;
+  overflow: hidden;
 }
 
 .news-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .news-item:hover .news-image img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.news-source-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
 }
 
-.sidebar-section {
-  background: rgba(255, 255, 255, 0.95);
+/* 热门新闻样式优化 */
+.hot-news-section {
+  background: white;
   border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  backdrop-filter: blur(10px);
-}
-
-.sidebar-section h3 {
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sidebar-section h3 i {
-  color: #2196F3;
+  padding: 25px;
 }
 
 .hot-news-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  cursor: pointer;
+  padding: 12px;
+  border-radius: 10px;
   transition: all 0.3s ease;
+  animation: slideIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .hot-news-item:hover {
-  transform: translateX(5px);
+  background: #f5f9ff;
+  transform: translateX(8px);
 }
 
-.rank-number {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #eee;
-  color: #666;
-  border-radius: 4px;
-  margin-right: 10px;
-  font-weight: bold;
+/* 动画效果 */
+.animated-fire {
+  animation: flame 1.5s ease-in-out infinite;
+  color: #ff4d4f;
 }
 
-.rank-number.top-rank {
-  background: #ff4d4f;
-  color: white;
+@keyframes flame {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
 }
 
-.topic-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.rotating {
+  animation: rotate 6s linear infinite;
+  color: #2196F3;
 }
 
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 话题标签样式优化 */
 .topic-tag {
-  padding: 6px 12px;
+  padding: 8px 16px;
   background: #f0f7ff;
   color: #2196F3;
   border-radius: 20px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .topic-tag:hover {
   background: #2196F3;
   color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
 
-.pagination {
-  padding: 24px 0;
-  margin-top: 0;
-  border-top: none;
-}
-
-.page-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background: #f0f7ff;
-  color: #2196F3;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #2196F3;
-  color: white;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-number {
-  font-size: 0.9rem;
-  color: #666;
-}
-
+/* 响应式优化 */
 @media (max-width: 1024px) {
   .news-content {
     grid-template-columns: 1fr;
   }
   
   .sidebar {
-    order: -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .news-item {
-    flex-direction: column;
-    padding: 16px 0;
+  .category-header {
+    padding: 20px;
   }
   
-  .news-item-content {
-    padding-right: 0;
-    margin-bottom: 16px;
+  .category-title {
+    font-size: 1.8rem;
   }
   
-  .news-image {
-    width: 100%;
-    height: 180px;
-  }
-  
-  .news-meta {
-    flex-wrap: wrap;
-    gap: 12px;
+  .news-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style> 
