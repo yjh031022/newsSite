@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/home/home.vue'
 import Category from '../views/category/category.vue'
 import NewsDetail from '../views/NewsDetail/newsDetail.vue'
+import UserInfo from '@/views/personal center/userinfo.vue'
+import Subscribe from '@/views/subscribe/subscribe.vue'
 
 Vue.use(VueRouter)
 
@@ -51,6 +53,16 @@ const routes = [
     path: '/newsType',
     name: 'NewsType',
     component: () => import('../views/newsType/newsType.vue')
+  },
+  {
+    path: '/profile',
+    name: 'UserInfo',
+    component: UserInfo
+  },
+  {
+    path: '/subscribe',
+    name: 'Subscribe',
+    component: Subscribe
   }
 
 

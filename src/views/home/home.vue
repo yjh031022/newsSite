@@ -7,7 +7,7 @@
         <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">
           <i class="fas fa-home"></i>首页
         </router-link>
-        <router-link to="/subscribe" class="nav-link" :class="{ active: $route.path === '/subscribe' }">
+        <router-link to="/subscribe" class="nav-link" :class="{ active: $route.path === '/subscribe' }" @click="goToSubscribe">
           <i class="fas fa-star"></i>我的订阅
         </router-link>
       </div>
@@ -16,10 +16,11 @@
         <input type="text" placeholder="搜索新闻..." />
         <button class="search-btn">搜索</button>
       </div>
-      <div class="nav-buttons">
-        <router-link to="/profile" class="nav-link profile-link">
-          <i class="fas fa-user"></i>个人中心
-        </router-link>
+      <div class="nav-buttons" @click="goToProfile">
+        <div class="nav-link profile-link">
+          <i class="fas fa-user"></i>
+          <span>个人中心</span>
+        </div>
       </div>
     </div>
 
@@ -199,6 +200,12 @@ export default {
         name: 'Category',
         params: { id: categoryId }
       });
+    },
+    goToProfile() {
+      this.$router.push('/profile')
+    },
+    goToSubscribe() {
+      this.$router.push('/subscribe')
     }
   },
   mounted() {
