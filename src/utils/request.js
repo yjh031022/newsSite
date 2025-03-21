@@ -1,24 +1,39 @@
 import axios from 'axios'
-import { Message } from 'element-ui'  // 假设使用Element UI的消息提示组件
+import { Message } from 'element-ui'
+import { getToken } from "@/utils/auth"
+import { tansParams } from '@/utils/intoal'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API || '/api', // api的基础url
-  timeout: 5000, // 请求超时时间
+  baseURL: process.env.VUE_APP_BASE_API || '/http://127.0.0.1:81/newsBg', // api的基础url
+  timeout: 10000, // 请求超时时间
   headers: {
-    'Content-Type': 'application/json;charset=utf-8'
+    'Content-Type': 'application/json;charset=utf-8',
+    'Content-Language': 'zh-CN'
   }
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 在发送请求之前做些什么
-    // 例如：获取token并添加到请求头
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+      const isToken = (config.headers || {}).isToken === false
+    if (getToken() && !isToken) {
+        config.headers['Authorization'] = 'Bearer ' + getToken()
     }
+      // get请求映射params参数
+      if (config.method === 'get' && config.params) {
+          let url = config.url + '?' + tansParams(config.params);
+          url = url.slice(0, -1);
+          config.params = {};
+          config.url = url;
+      }
+      if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+          const requestObj = {
+              url: config.url,
+              data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
+              time: new Date().getTime()
+          }
+      }
     return config
   },
   error => {
