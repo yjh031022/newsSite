@@ -4,7 +4,7 @@
     <div class="header">
       <div class="logo">新闻智能推荐系统</div>
       <div class="nav-links">
-        <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">
+        <router-link to="/" class="nav-link" :class="{ active: $route.path === '/home' }">
           <i class="fas fa-home"></i>首页
         </router-link>
         <router-link to="/subscribe" class="nav-link" :class="{ active: $route.path === '/subscribe' }" @click="goToSubscribe">
@@ -26,12 +26,12 @@
 
     <!-- 新闻分类导航 -->
     <div class="category-nav">
-      <div class="category-item" 
-           v-for="category in categories" 
+      <div class="category-item"
+           v-for="category in categories"
            :key="category.id"
            :class="{ active: currentCategory === category.id }"
            @click="goToCategory(category.id)">
-        {{ category.name }}
+        {{ category.newsName }}
       </div>
     </div>
 
@@ -49,7 +49,7 @@
         <div class="carousel-arrow right" @click="nextSlide">&gt;</div>
         <!-- 轮播图指示器 -->
         <div class="carousel-indicators">
-          <span v-for="(item, index) in carouselItems" 
+          <span v-for="(item, index) in carouselItems"
                 :key="index"
                 :class="{ active: currentIndex === index }"
                 @click="setCurrentIndex(index)">
@@ -81,7 +81,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="news-section">
         <div class="section-header">
           <h3><i class="fas fa-heart"></i> 猜你喜欢</h3>
@@ -102,7 +102,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="news-section">
         <div class="section-header">
           <h3><i class="fas fa-fire"></i> 热门栏目</h3>
@@ -125,29 +125,19 @@
 </template>
 
 <script>
+import { getNewsTypeList } from '../../api/home'
 export default {
   name: 'Home',
   data() {
     return {
       currentCategory: 'politics',
-      categories: [
-        { id: 'politics', name: '时政' },
-        { id: 'sports', name: '体育' },
-        { id: 'culture', name: '文化' },
-        { id: 'tech', name: '科技' },
-        { id: 'travel', name: '旅游' },
-        { id: 'finance', name: '财经' },
-        { id: 'entertainment', name: '娱乐' },
-        { id: 'health', name: '健康' },
-        { id: 'economy', name: '经济' },
-        { id: 'education', name: '教育' }
-      ],
+      categories: [],
       currentIndex: 0,
       carouselItems: [
-        { image: '/carousel1.jpg', title: '重要新闻标题1' },
-        { image: '/carousel2.jpg', title: '重要新闻标题2' },
-        { image: '/carousel3.jpg', title: '重要新闻标题3' },
-        { image: '/carousel4.jpg', title: '重要新闻标题4' }
+        { image: 'https://picsum.photos/1920/1080?random=1'},
+        { image: 'https://picsum.photos/1920/1080?random=2' },
+        { image: 'https://picsum.photos/1920/1080?random=3' },
+        { image: 'https://picsum.photos/1920/1080?random=4' }
       ],
       carouselInterval: null,
       todayNews: [
@@ -178,7 +168,29 @@ export default {
       ]
     }
   },
+  created() {
+    this.getNewsCategory();
+  },
   methods: {
+    //获取新闻类别列表
+    getNewsCategory() {
+      const params = {
+        pageSize: 10,
+        pageNum: 1
+      }
+      getNewsTypeList(params).then(res =>{
+        console.log("Res:",res)
+        this.categories = res.rows
+      })
+    },
+    //单个新闻类别列表
+    goToCategory(categoryId) {
+      this.$router.push({
+        name: "Category",
+        params: { id: categoryId}
+         
+      });
+    },
     startCarousel() {
       this.carouselInterval = setInterval(() => {
         this.currentIndex = (this.currentIndex + 1) % this.carouselItems.length
@@ -188,19 +200,14 @@ export default {
       this.currentIndex = index
     },
     prevSlide() {
-      this.currentIndex = this.currentIndex === 0 
-        ? this.carouselItems.length - 1 
+      this.currentIndex = this.currentIndex === 0
+        ? this.carouselItems.length - 1
         : this.currentIndex - 1;
     },
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.carouselItems.length;
     },
-    goToCategory(categoryId) {
-      this.$router.push({
-        name: 'Category',
-        params: { id: categoryId }
-      });
-    },
+   
     goToProfile() {
       this.$router.push('/profile')
     },
@@ -234,7 +241,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(45deg, #ffffff20 25%, transparent 25%),
     linear-gradient(-45deg, #ffffff20 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #ffffff20 75%),
@@ -331,7 +338,7 @@ export default {
 .search-box input:focus {
   outline: none;
   border-color: #2196F3;
-  box-shadow: 
+  box-shadow:
     0 0 0 2px rgba(33, 150, 243, 0.2),
     0 4px 6px rgba(0, 0, 0, 0.05);
   background: rgba(255, 255, 255, 1);
@@ -370,7 +377,7 @@ export default {
   .search-box {
     max-width: 300px;
   }
-  
+
   .nav-link {
     padding: 6px 12px;
     font-size: 0.9rem;
@@ -381,20 +388,20 @@ export default {
   .header {
     padding: 0.8rem 1rem;
   }
-  
+
   .logo {
     font-size: 1.3rem;
     min-width: auto;
   }
-  
+
   .search-box {
     max-width: 200px;
   }
-  
+
   .nav-link span {
     display: none;
   }
-  
+
   .nav-link i {
     font-size: 1.2rem;
   }
@@ -497,8 +504,8 @@ export default {
 
 .carousel-container {
   width: 100%;
-  max-width: 1200px;
-  height: 300px;  /* 调整高度 */
+  max-width: 1300px;
+  height: 500px;  /* 调整高度 */
   position: relative;
   overflow: hidden;
   margin: 0 auto;
@@ -600,12 +607,12 @@ export default {
   .carousel-container {
     height: 200px;
   }
-  
+
   .carousel-title {
     font-size: 16px;
     padding: 10px 15px;
   }
-  
+
   .carousel-arrow {
     width: 30px;
     height: 30px;
@@ -615,7 +622,7 @@ export default {
 
 .news-sections {
   display: grid;
-  grid-template-columns: 1fr 1fr 300px;
+  grid-template-columns: 2fr 1fr 300px;
   gap: 20px;
   padding: 20px;
   max-width: 1200px;
@@ -627,7 +634,7 @@ export default {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 1px 3px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -803,7 +810,7 @@ export default {
   .news-sections {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .news-section:last-child {
     grid-column: span 2;
   }
@@ -813,11 +820,11 @@ export default {
   .news-sections {
     grid-template-columns: 1fr;
   }
-  
+
   .news-section:last-child {
     grid-column: span 1;
   }
-  
+
   .news-image {
     width: 100px;
     height: 70px;

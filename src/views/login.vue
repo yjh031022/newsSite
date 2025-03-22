@@ -1,87 +1,85 @@
 <template>
-	<div class="login-page">
-		<div class="background-animation">
-			<div v-for="i in 50" 
-				 :key="i" 
-				 class="dot"
-				 :style="{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 3}s` }">
-			</div>
-		</div>
+  <div class="login-page">
+    <div class="background-animation">
+      <div v-for="i in 50"
+           :key="i"
+           class="dot"
+           :style="{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 3}s` }">
+      </div>
+    </div>
 
-		<div class="login-container">
-			<h1 class="login-title">登录</h1>
-			<div class="input-group">
-				<input 
-					type="text" 
-					v-model="formData.username" 
-					placeholder="请输入用户名"
-				>
-			</div>
-			<div class="input-group">
-				<input 
-					type="password" 
-					v-model="formData.password" 
-					placeholder="请输入密码"
-				>
-			</div>
-			<div class="input-group captcha-group">
-				<input 
-					type="text" 
-					v-model="formData.captcha" 
-					placeholder="请输入验证码" 
-					class="captcha-input"
-				>
-				<div class="captcha-image" @click="refreshCaptcha">{{ captchaText }}</div>
-			</div>
-			<button class="login-btn" @click="handleLogin">立即登录</button>
-		</div>
-	</div>
+    <div class="login-container">
+      <h1 class="login-title">登录</h1>
+      <div class="input-group">
+        <input
+            type="text"
+            v-model="formData.username"
+            placeholder="请输入用户名"
+        >
+      </div>
+      <div class="input-group">
+        <input
+            type="password"
+            v-model="formData.password"
+            placeholder="请输入密码"
+        >
+      </div>
+	  <div class="goto-register">
+		未注册?<span @click="gotoRegister"><a>点击注册</a></span>
+      </div>
+      <button class="login-btn" @click="handleLogin">立即登录</button>
+    </div>
+  </div>
 </template>
 
 <script>
+import { login } from '@/api/login'
 export default {
-	name: 'Login',
-	data() {
-		return {
-			formData: {
-				username: '',
-				password: '',
-				captcha: ''
-			},
-			captchaText: 'tC83'
-		}
+  name: 'Login',
+  data() {
+    return {
+      formData: {
+        username: '',
+        password: '',
+      },
+ 
+    }
+  },
+  methods: {
+	gotoRegister() {
+		this.$router.replace('/register');
 	},
-	methods: {
-		handleLogin() {
-			// 验证表单
-			if (!this.formData.username) {
-				this.$message.error('请输入用户名')
-				return
-			}
-			if (!this.formData.password) {
-				this.$message.error('请输入密码')
-				return
-			}
-			if (!this.formData.captcha) {
-				this.$message.error('请输入验证码')
-				return
-			}
-
-			// 这里添加登录逻辑
-			console.log('登录信息：', this.formData)
-		},
-		refreshCaptcha() {
-			// 这里添加刷新验证码的逻辑
-			this.captchaText = Math.random().toString(36).substr(2, 4)
-		}
-	}
+    handleLogin() {
+      const params = {
+        account: this.formData.username,
+        password: this.formData.password,
+      }
+      login(params).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '登录成功',
+            type: 'success'
+          });
+          this.$router.replace('/home');
+        } else {
+          alert('登录失败');
+        }
+      })
+    },
+    //todo
+  }
 }
 </script>
 
 <style scoped>
 .login-page {
+  width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: fixed;
 	margin: 0;
 	padding: 0;
+  overflow: hidden;
 	display: flex;
 	justify-content: center;
 	align-items: center;

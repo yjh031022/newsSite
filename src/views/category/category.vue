@@ -8,6 +8,11 @@
         </div>
         {{ categoryName }}
       </h1>
+
+      <div class="categoryRemark">
+        {{ categoryRemark }}
+      </div>
+
       <div class="category-stats">
         <span class="stat-item">
           <i class="far fa-newspaper"></i>
@@ -33,21 +38,22 @@
                @click="goToDetail(item.id)"
                :style="{ animationDelay: `${index * 0.1}s` }">
             <div class="news-image-wrapper">
-              <div class="news-image" v-if="item.image">
-                <img :src="item.image" :alt="item.title">
+              <div class="news-image" v-if="item.imgUrl">
+                <!-- <img :src="`${item.imgUrl}${item.random}`" :alt="item.newsTitle"> -->
+                <img :src="getImgUrl(item.imgUrl)" :alt="item.newsTitle">
               </div>
-              <div class="news-source-badge">{{ item.source }}</div>
+              <div class="news-source-badge">{{ source }}</div>
             </div>
             <div class="news-item-content">
-              <h3 class="news-title">{{ item.title }}</h3>
+              <h3 class="news-title">{{ item.newsTitle }}</h3>
               <div class="news-meta">
                 <span class="time">
                   <i class="far fa-clock pulse"></i>
-                  {{ item.publishTime }}
+                  {{ item.releaseTime }}
                 </span>
                 <span class="views">
                   <i class="far fa-eye"></i>
-                  {{ item.views }}
+                  {{ totalViews }}
                 </span>
               </div>
             </div>
@@ -55,142 +61,34 @@
         </div>
       </div>
 
-      <!-- 右侧边栏 -->
-      <div class="sidebar">
-        <!-- 热门排行 -->
-        <div class="sidebar-section hot-news-section">
-          <h3>
-            <i class="fas fa-fire animated-fire"></i>
-            热门排行
-          </h3>
-          <div class="hot-news-list">
-            <div class="hot-news-item" 
-                 v-for="(item, index) in hotNews" 
-                 :key="index"
-                 :style="{ animationDelay: `${index * 0.1}s` }">
-              <span class="rank-number" :class="{ 'top-rank': index < 3 }">{{ index + 1 }}</span>
-              <div class="hot-news-content">
-                <h4>{{ item.title }}</h4>
-                <span class="view-count">
-                  <i class="far fa-eye"></i>
-                  {{ item.views }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 相关话题 -->
-        <div class="sidebar-section topics-section">
-          <h3>
-            <i class="fas fa-hashtag rotating"></i>
-            相关话题
-          </h3>
-          <div class="topic-list">
-            <a class="topic-tag" 
-               v-for="(topic, index) in relatedTopics" 
-               :key="index"
-               :style="{ animationDelay: `${index * 0.1}s` }">
-              # {{ topic }}
-            </a>
-          </div>
-        </div>
-      </div>
+ 
+      
     </div>
   </div>
 </template>
 
 <script>
+import { getNewsDetails,getNewsDetailsList } from '../../api/details';
 export default {
   name: 'Category',
   data() {
     return {
+      categoryId:'',
       categoryName: '',
-      totalNews: 1234,
+      categoryRemark: '',
+      totalNews: '',
       totalViews: 45678,
-      currentPage: 1,
-      totalPages: 10,
+      image: 'https://picsum.photos/400/300?random=1',
+      source: '新华网',
       newsList: [
-        {
-          id: 1,
-          title: '重要新闻标题1：国务院最新政策解读与展望',
-          publishTime: '2小时前',
-          views: 1234,
-          source: '新华网',
-          image: 'https://picsum.photos/400/300?random=1'
-        },
-        {
-          id: 2,
-          title: '重要新闻标题2：经济发展新动向分析报告',
-          publishTime: '3小时前',
-          views: 2345,
-          source: '人民日报',
-          image: 'https://picsum.photos/400/300?random=2'
-        },
-        {
-          id: 3,
-          title: '重要新闻标题3：科技创新引领产业升级',
-          publishTime: '4小时前',
-          views: 3456,
-          source: '央视新闻',
-          image: 'https://picsum.photos/400/300?random=3'
-        },
-        {
-          id: 4,
-          title: '重要新闻标题4：教育改革最新进展报道',
-          publishTime: '5小时前',
-          views: 4567,
-          source: '环球时报',
-          image: 'https://picsum.photos/400/300?random=4'
-        },
-        {
-          id: 5,
-          title: '重要新闻标题5：医疗健康领域重大突破',
-          publishTime: '6小时前',
-          views: 5678,
-          source: '科技日报',
-          image: 'https://picsum.photos/400/300?random=5'
-        },
-        {
-          id: 6,
-          title: '重要新闻标题6：文化产业发展新趋势',
-          publishTime: '7小时前',
-          views: 6789,
-          source: '文汇报',
-          image: 'https://picsum.photos/400/300?random=6'
-        },
-        {
-          id: 7,
-          title: '重要新闻标题7：体育赛事最新战报',
-          publishTime: '8小时前',
-          views: 7890,
-          source: '体坛周报',
-          image: 'https://picsum.photos/400/300?random=7'
-        },
-        {
-          id: 8,
-          title: '重要新闻标题8：环保事业新进展',
-          publishTime: '9小时前',
-          views: 8901,
-          source: '中国日报',
-          image: 'https://picsum.photos/400/300?random=8'
-        },
-        {
-          id: 9,
-          title: '重要新闻标题9：金融市场最新动态',
-          publishTime: '10小时前',
-          views: 9012,
-          source: '经济日报',
-          image: 'https://picsum.photos/400/300?random=9'
-        },
-        {
-          id: 10,
-          title: '重要新闻标题10：社会民生热点关注',
-          publishTime: '11小时前',
-          views: 10123,
-          source: '光明日报',
-          image: 'https://picsum.photos/400/300?random=10'
-        }
+        // {
+        //   id: 1,
+        //   title: '重要新闻标题1：国务院最新政策解读与展望',
+        //   publishTime: '2小时前',
+        //   views: 1234,
+        //   source: '新华网',
+        //   image: 'https://picsum.photos/400/300?random=1'
+        // },
       ],
       hotNews: [
         {
@@ -201,11 +99,6 @@ export default {
       ],
       relatedTopics: ['两会', '经济发展', '民生', '科技创新']
     }
-  },
-  created() {
-    // 获取路由参数并设置分类名称
-    const categoryId = this.$route.params.id;
-    this.setCategoryName(categoryId);
   },
   computed: {
     getCategoryIcon() {
@@ -225,23 +118,47 @@ export default {
       return icons[this.categoryName] || 'fa-newspaper'
     }
   },
+  created() {
+    this.totalViews = this.generateRandomNumber()
+    this.categoryId = this.$route.params.id
+    console.log('categoryId:', this.categoryId)
+  },
+  mounted() {
+    this.getAloneNewsTypes()
+    this.getNewsList()
+    this.generateRandomNumber()
+  },
   methods: {
-    setCategoryName(categoryId) {
-      // 根据 ID 设置分类名称
-      const categoryMap = {
-        'politics': '时政',
-        'sports': '体育',
-        'culture': '文化',
-        'tech': '科技',
-        'travel': '旅游',
-        'finance': '财经',
-        'entertainment': '娱乐',
-        'health': '健康',
-        'economy': '经济',
-        'education': '教育'
-      };
-      this.categoryName = categoryMap[categoryId] || '未知分类';
+    //查询详细新闻类别内容
+    getAloneNewsTypes() {
+      getNewsDetails(this.categoryId).then(res => {
+        this.categoryName = res.data.newsName
+        this.categoryRemark = res.data.newsRemark
+      })
     },
+    //获取新闻列表
+    getNewsList() {
+      const params = {
+        typeId: this.categoryId,
+        pageSize: 50,
+        pageNum: 1
+      }
+      getNewsDetailsList(params).then(res => {
+        this.totalNews = res.total
+        this.newsList = res.rows
+        console.log("newsList:",this.newsList)
+      
+      })
+    },
+    //生成随机数
+    generateRandomNumber() {
+      const randomNumber = Math.floor(Math.random() * 1000) + 1;
+      return randomNumber
+    },
+    getImgUrl(imgUrl) {
+      const randomNumber = this.generateRandomNumber();
+      return `${imgUrl}${randomNumber}`;
+  },
     goToDetail(id) {
       this.$router.push({
         name: 'NewsDetail',

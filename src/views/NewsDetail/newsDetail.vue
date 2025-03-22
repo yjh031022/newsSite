@@ -3,7 +3,7 @@
     <div class="news-detail-card" v-if="!loading">
       <!-- 新闻标题 -->
       <div class="title-section">
-        <h1 class="news-title">{{ newsDetail.title }}</h1>
+        <h1 class="news-title">{{ newsDetail.newsTitle }}</h1>
         <button class="subscribe-btn" 
                 :class="{ subscribed: isSubscribed }" 
                 @click="toggleSubscribe">
@@ -17,26 +17,26 @@
         <div class="info-left">
           <span class="source">
             <i class="fas fa-newspaper"></i>
-            {{ newsDetail.source }}
+            {{ source }}
           </span>
           <span class="publish-time">
             <i class="far fa-clock"></i>
-            {{ newsDetail.publishTime }}
+            {{ newsDetail.releaseTime }}
           </span>
           <span class="views">
             <i class="far fa-eye"></i>
-            {{ newsDetail.views }} 阅读
+            {{ newsDetail.readingNum }} 阅读
           </span>
         </div>
       </div>
 
       <!-- 新闻内容区域添加操作按钮 -->
       <div class="news-content-wrapper">
-        <div class="news-content" v-html="newsDetail.content"></div>
+        <div class="news-content" v-html="newsDetail.newsContent"></div>
         <div class="content-actions">
-          <button class="action-btn like-btn" :class="{ active: isLiked }" @click="toggleNewsLike">
+          <button class="action-btn like-btn" :class="{ active: isLiked }" @click="toggleNewsLike(isLiked)">
             <i class="far" :class="isLiked ? 'fas fa-heart' : 'far fa-heart'"></i>
-            <span>{{ newsDetail.likes || 0 }}</span>
+            <span>{{ newsDetail.appreciateNum || 0 }}</span>
           </button>
           <button class="action-btn interest-btn" 
                   :class="{ 'interested': isInterested, 'not-interested': isNotInterested }" 
@@ -127,18 +127,16 @@
 </template>
 
 <script>
+import { getNewsInfo, addLikeNews, addMarkNews } from '../../api/details';
 export default {
   name: 'NewsDetail',
   data() {
     return {
-      loading: true,
-      newsDetail: {
-        title: '',
-        source: '',
+       source: 4,
         publishTime: '',
-        views: 0,
-        content: ''
-      },
+        views: 4,
+      loading: true,
+      newsDetail: {},
       comments: [
         {
           id: 1,
@@ -165,7 +163,9 @@ export default {
       isLiked: false,
       isInterested: false,
       isNotInterested: false,
-      isSubscribed: false
+      isSubscribed: false,
+      newsId:'',
+      currentTime:''
     }
   },
   computed: {
@@ -186,33 +186,33 @@ export default {
     }
   },
   created() {
-    // 获取路由参数中的新闻ID
-    const newsId = this.$route.params.id;
-    console.log('News ID:', newsId);
-    // 根据ID获取新闻详情
-    this.getNewsDetail(newsId);
+  
+    this.newsId = this.$route.params.id;
+    console.log('News ID:', this.newsId);
+    console.log(this.getCurrentTime())
+  },
+  mounted() {
+    this.getNewsDetail()
   },
   methods: {
-    async getNewsDetail(id) {
-      try {
-        this.loading = true;
-        // 获取数据的逻辑
-        this.newsDetail = {
-          title: `新闻标题 ${id}`,
-          source: '新华网',
-          publishTime: '2024-03-14 14:30',
-          views: 12345,
-          content: `
-            <p>这是新闻 ${id} 的详细内容...</p>
-            <p>新闻详细内容段落2...</p>
-            <p>新闻详细内容段落3...</p>
-          `
-        };
+    //获取当前时间
+    getCurrentTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (`0${now.getMonth() + 1}`).slice(-2); 
+      const day = (`0${now.getDate()}`).slice(-2);
+      const hours = (`0${now.getHours()}`).slice(-2);
+      const minutes = (`0${now.getMinutes()}`).slice(-2);
+      const currentTime = `${year}-${month}-${day}`;
+      return currentTime
+  },
+    //获取新闻详情信息
+    getNewsDetail() {
+      getNewsInfo(this.newsId).then(res =>{
         this.loading = false;
-      } catch (error) {
-        console.error('Failed to fetch news detail:', error);
-        this.loading = false;
-      }
+        this.newsDetail = res.data;
+        console.log("res",res)
+      })
     },
     toggleLike(comment) {
       comment.isLiked = !comment.isLiked;
@@ -223,21 +223,77 @@ export default {
       // 这里添加提交评论的逻辑
       this.newComment = '';
     },
-    toggleNewsLike() {
-      this.isLiked = !this.isLiked;
-      // 这里添加点赞/取消点赞的逻辑
-    },
-    toggleInterest() {
-      if (!this.isInterested && !this.isNotInterested) {
-        this.isInterested = true;
-      } else if (this.isInterested) {
-        this.isInterested = false;
-        this.isNotInterested = true;
-      } else {
-        this.isNotInterested = false;
+    // 切换点赞状态
+    toggleNewsLike(isLiked) {
+      console.log("isLiked",isLiked)
+      if(isLiked) {
+        this.isLiked = false
+        const delParams = {
+          newsId: this.newsId,
+          userId: '1903269844354760706',
+          appreciateStatus: 0,
+          // appreciateTime: this.getCurrentTime()
+        }
+        addLikeNews(delParams).then(res => {
+          console.log("del:",res)
+          this.$message.error(res.msg);
+        })
       }
-      // 这里添加标记兴趣的逻辑
+      else {
+        this.isLiked = true
+        const params = {
+          newsId: this.newsId,
+          userId: '1903269844354760706',
+          appreciateStatus: 1,
+          // appreciateTime: this.getCurrentTime()
+        }
+        addLikeNews(params).then(res => {
+          console.log("add:",res)
+          this.$message.success(res.msg);
+        })
+      }
     },
+    //标记
+     toggleInterest() {
+   if (this.isInterested && !this.isNotInterested) {
+     // 当前是感兴趣的，切换为不感兴趣
+     this.isInterested = false;
+     this.isNotInterested = true;
+
+     const deleteParams = {
+       newsId: this.newsId,
+       markName: '1903269844354760706',
+       markType: 0,
+     };
+
+     deleteMarkNews(deleteParams).then(res => {
+       console.log("delete:", res);
+       this.$message.success(res.msg);
+     }).catch(error => {
+       this.isInterested = true;
+       this.isNotInterested = false;
+     });
+
+   } else {
+     this.isInterested = true;
+     this.isNotInterested = false;
+
+     const addParams = {
+       newsId: this.newsId,
+       markName: '1903269844354760706',
+       markType: 1,
+     };
+
+     addMarkNews(addParams).then(res => {
+       console.log("add:", res);
+       this.$message.success(res.msg);
+     }).catch(error => {
+       this.isInterested = false;
+       this.isNotInterested = true;
+     });
+   }
+ },
+
     toggleSubscribe() {
       this.isSubscribed = !this.isSubscribed;
       // 这里添加订阅/取消订阅的逻辑
