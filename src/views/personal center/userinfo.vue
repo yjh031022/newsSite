@@ -1,94 +1,168 @@
 <template>
   <div class="profile-container">
-    <!-- 个人信息卡片 -->
-    <div class="profile-card">
-      <div class="profile-header">
-        <div class="avatar-section">
-          <div class="avatar-wrapper">
-            <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="用户头像" class="avatar">
-            <div class="avatar-edit" @click="triggerAvatarUpload">
-              <i class="fas fa-camera"></i>
+    <!-- 左侧导航栏 -->
+    <aside class="profile-nav">
+      <div class="nav-header">
+        <div class="avatar-container">
+          <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="用户头像" class="avatar">
+        </div>
+        <h3 class="nav-username">{{ userInfo.nickname || '用户昵称' }}</h3>
+      </div>
+      <nav class="nav-menu">
+        <div class="nav-item" 
+             :class="{ active: currentView === 'profile' }"
+             @click="currentView = 'profile'">
+          <i class="fas fa-user"></i>
+          <span>我的主页</span>
+        </div>
+        <div class="nav-item" 
+             :class="{ active: currentView === 'settings' }"
+             @click="currentView = 'settings'">
+          <i class="fas fa-cog"></i>
+          <span>个人设置</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- 右侧内容区 -->
+    <main class="profile-content">
+      <transition name="fade" mode="out-in">
+        <!-- 我的主页 -->
+        <div v-if="currentView === 'profile'" class="profile-overview">
+          <!-- 数据概览 -->
+          <section class="overview-section">
+            <div class="stats-grid">
+              <div class="stat-box">
+                <i class="fas fa-heart"></i>
+                <div class="stat-details">
+                  <h4>{{ userStats.likes }}</h4>
+                  <span>获赞</span>
+                </div>
+              </div>
+              <div class="stat-box">
+                <i class="fas fa-star"></i>
+                <div class="stat-details">
+                  <h4>{{ userStats.follows }}</h4>
+                  <span>关注</span>
+                </div>
+              </div>
+              <div class="stat-box">
+                <i class="fas fa-users"></i>
+                <div class="stat-details">
+                  <h4>{{ userStats.followers }}</h4>
+                  <span>粉丝</span>
+                </div>
+              </div>
             </div>
-            <input type="file" ref="avatarInput" style="display: none" @change="handleAvatarChange" accept="image/*">
-          </div>
-          <h2 class="username">{{ userInfo.nickname || '设置昵称' }}</h2>
-          <p class="user-id">ID: {{ userInfo.userId || 'USER_001' }}</p>
-        </div>
-      </div>
+          </section>
 
-      <!-- 个人信息表单 -->
-      <div class="profile-form">
-        <h3 class="section-title">
-          <i class="fas fa-user-edit"></i>
-          个人资料
-        </h3>
-        
-        <div class="form-group">
-          <label>昵称</label>
-          <div class="input-wrapper">
-            <i class="fas fa-user"></i>
-            <input type="text" v-model="userInfo.nickname" placeholder="设置昵称">
-          </div>
-        </div>
+          <!-- 个人资料 -->
+          <section class="info-section">
+            <h2 class="section-title">个人资料</h2>
+            <div class="info-content">
+              <div class="info-row">
+                <div class="info-col">
+                  <label>用户ID</label>
+                  <span>{{ userInfo.userId }}</span>
+                </div>
+                <div class="info-col">
+                  <label>昵称</label>
+                  <span>{{ userInfo.nickname }}</span>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-col">
+                  <label>性别</label>
+                  <span>{{ formatGender(userInfo.gender) }}</span>
+                </div>
+                <div class="info-col">
+                  <label>生日</label>
+                  <span>{{ userInfo.birthday || '未设置' }}</span>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-col full">
+                  <label>个人简介</label>
+                  <p>{{ userInfo.bio || '这个人很懒，什么都没写~' }}</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <div class="form-group">
-          <label>用户名</label>
-          <div class="input-wrapper">
-            <i class="fas fa-id-card"></i>
-            <input type="text" v-model="userInfo.username" placeholder="设置用户名">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>性别</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" v-model="userInfo.gender" value="male">
-              <i class="fas fa-mars"></i> 男
-            </label>
-            <label class="radio-label">
-              <input type="radio" v-model="userInfo.gender" value="female">
-              <i class="fas fa-venus"></i> 女
-            </label>
-            <label class="radio-label">
-              <input type="radio" v-model="userInfo.gender" value="other">
-              <i class="fas fa-genderless"></i> 其他
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>生日</label>
-          <div class="input-wrapper">
-            <i class="fas fa-birthday-cake"></i>
-            <input type="date" v-model="userInfo.birthday">
-          </div>
+          <!-- 最近动态 -->
+          <section class="activity-section">
+            <h2 class="section-title">最近动态</h2>
+            <div class="activity-list">
+              <div v-for="(activity, index) in recentActivities" 
+                   :key="index" 
+                   class="activity-card">
+                <i :class="activity.icon"></i>
+                <div class="activity-details">
+                  <p>{{ activity.content }}</p>
+                  <time>{{ activity.time }}</time>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <div class="form-group">
-          <label>邮箱</label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope"></i>
-            <input type="email" v-model="userInfo.email" placeholder="设置邮箱">
-          </div>
-        </div>
+        <!-- 个人设置 -->
+        <div v-else class="settings-view">
+          <section class="settings-section">
+            <h2 class="section-title">个人资料设置</h2>
+            <form class="settings-form" @submit.prevent="saveProfile">
+              <!-- 头像设置 -->
+              <div class="form-section">
+                <div class="avatar-setting">
+                  <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="头像">
+                  <button type="button" class="upload-btn" @click="triggerAvatarUpload">
+                    更换头像
+                  </button>
+                  <input type="file" ref="avatarInput" hidden @change="handleAvatarChange" accept="image/*">
+                </div>
+              </div>
 
-        <div class="form-group">
-          <label>个人简介</label>
-          <div class="input-wrapper">
-            <i class="fas fa-pen"></i>
-            <textarea v-model="userInfo.bio" placeholder="介绍一下自己吧..."></textarea>
-          </div>
-        </div>
+              <!-- 基本信息 -->
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>昵称</label>
+                  <input type="text" v-model="userInfo.nickname" placeholder="请输入昵称">
+                </div>
+                <div class="form-field">
+                  <label>性别</label>
+                  <div class="radio-options">
+                    <label class="radio-label">
+                      <input type="radio" v-model="userInfo.gender" value="male">
+                      <span>男</span>
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" v-model="userInfo.gender" value="female">
+                      <span>女</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>生日</label>
+                  <input type="date" v-model="userInfo.birthday">
+                </div>
+                <div class="form-field">
+                  <label>邮箱</label>
+                  <input type="email" v-model="userInfo.email" placeholder="请输入邮箱">
+                </div>
+                <div class="form-field full">
+                  <label>个人简介</label>
+                  <textarea v-model="userInfo.bio" placeholder="介绍一下自己吧..."></textarea>
+                </div>
+              </div>
 
-        <div class="form-actions">
-          <button class="save-btn" @click="saveProfile">
-            <i class="fas fa-save"></i>
-            保存修改
-          </button>
+              <div class="form-actions">
+                <button type="submit" class="submit-btn">保存修改</button>
+              </div>
+            </form>
+          </section>
         </div>
-      </div>
-    </div>
+      </transition>
+    </main>
   </div>
 </template>
 
@@ -97,26 +171,56 @@ export default {
   name: 'UserInfo',
   data() {
     return {
+      currentView: 'profile', // 当前视图：profile/settings
       userInfo: {
         avatar: '',
-        nickname: '',
+        nickname: '示例用户',
         userId: 'USER_001',
         username: '',
-        gender: '',
+        gender: 'male',
         birthday: '',
         email: '',
-        bio: ''
-      }
+        bio: '这是一个示例简介...'
+      },
+      userStats: {
+        likes: 128,
+        follows: 56,
+        followers: 89
+      },
+      recentActivities: [
+        {
+          icon: 'fas fa-heart',
+          content: '点赞了文章《XXXX》',
+          time: '2小时前'
+        },
+        {
+          icon: 'fas fa-comment',
+          content: '评论了文章《YYYY》',
+          time: '3小时前'
+        },
+        {
+          icon: 'fas fa-star',
+          content: '收藏了文章《ZZZZ》',
+          time: '1天前'
+        }
+      ]
     }
   },
   methods: {
+    formatGender(gender) {
+      const genderMap = {
+        male: '男',
+        female: '女',
+        other: '其他'
+      }
+      return genderMap[gender] || '未设置'
+    },
     triggerAvatarUpload() {
       this.$refs.avatarInput.click()
     },
     handleAvatarChange(event) {
       const file = event.target.files[0]
       if (file) {
-        // 这里可以添加头像上传逻辑
         const reader = new FileReader()
         reader.onload = (e) => {
           this.userInfo.avatar = e.target.result
@@ -125,9 +229,8 @@ export default {
       }
     },
     saveProfile() {
-      // 这里添加保存个人信息的逻辑
+      // 保存个人信息的逻辑
       console.log('保存的用户信息：', this.userInfo)
-      // 显示保存成功提示
       alert('保存成功！')
     }
   }
@@ -136,38 +239,31 @@ export default {
 
 <style scoped>
 .profile-container {
+  display: flex;
   min-height: 100vh;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+  background: #f8fafc;
 }
 
-.profile-card {
-  max-width: 800px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* 左侧导航样式优化 */
+.profile-nav {
+  width: 220px;
+  background: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  height: 100vh;
+  padding: 32px 0;
 }
 
-.profile-header {
-  background: linear-gradient(135deg, #2196F3, #1976D2);
-  padding: 40px 20px;
+.nav-header {
+  padding: 0 24px;
   text-align: center;
-  color: white;
 }
 
-.avatar-section {
-  margin-bottom: 20px;
-}
-
-.avatar-wrapper {
+.avatar-container {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
   position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 20px;
 }
 
 .avatar {
@@ -175,104 +271,258 @@ export default {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+  border: 3px solid #e8f2ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.avatar-edit {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  background: #2196F3;
-  border-radius: 50%;
+.nav-username {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 0 0 24px;
+}
+
+.nav-menu {
+  padding: 0 16px;
+}
+
+.nav-item {
+  padding: 12px 20px;
+  margin: 4px 0;
+  border-radius: 8px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 3px solid white;
-  transition: all 0.3s ease;
+  gap: 12px;
+  color: #4a5568;
+  transition: all 0.2s ease;
 }
 
-.avatar-edit:hover {
-  background: #1976D2;
-  transform: scale(1.1);
+.nav-item:hover {
+  background: #f1f5f9;
+  color: #3182ce;
 }
 
-.username {
-  font-size: 1.8rem;
-  margin-bottom: 5px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.nav-item.active {
+  background: #3182ce;
+  color: white;
 }
 
-.user-id {
-  font-size: 0.9rem;
-  opacity: 0.8;
+/* 右侧内容区样式优化 */
+.profile-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: 32px;
 }
 
-.profile-form {
-  padding: 30px;
+/* 数据概览样式 */
+.overview-section {
+  margin-bottom: 32px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.stat-box {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.stat-box i {
+  font-size: 24px;
+  color: #3182ce;
+}
+
+.stat-details h4 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.stat-details span {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 信息区域样式 */
+.info-section,
+.activity-section,
+.settings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
-  color: #333;
-  font-size: 1.4rem;
-  margin-bottom: 30px;
+  font-size: 18px;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.info-content {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.form-group {
-  margin-bottom: 25px;
+.info-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
 }
 
-.form-group label {
-  display: block;
-  color: #666;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-}
-
-.input-wrapper {
-  position: relative;
+.info-col {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.input-wrapper i {
-  position: absolute;
-  left: 12px;
+.info-col.full {
+  grid-column: 1 / -1;
+}
+
+.info-col label {
+  font-size: 14px;
   color: #666;
 }
 
-.input-wrapper input,
-.input-wrapper textarea {
-  width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 1px solid #e0e0e0;
+.info-col span,
+.info-col p {
+  color: #1a1a1a;
+}
+
+/* 活动列表样式 */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
   border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  background: #f8fafc;
+  transition: transform 0.2s ease;
 }
 
-.input-wrapper textarea {
-  min-height: 100px;
+.activity-card:hover {
+  transform: translateX(8px);
+}
+
+.activity-card i {
+  color: #3182ce;
+  font-size: 16px;
+}
+
+.activity-details {
+  flex: 1;
+}
+
+.activity-details p {
+  margin: 0 0 4px;
+  color: #1a1a1a;
+}
+
+.activity-details time {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 设置表单样式 */
+.settings-form {
+  max-width: 720px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.avatar-setting {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar-setting img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.upload-btn {
+  padding: 8px 16px;
+  background: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #2c5282;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.form-field input,
+.form-field textarea {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
+  outline: none;
+}
+
+.form-field textarea {
+  height: 120px;
   resize: vertical;
 }
 
-.input-wrapper input:focus,
-.input-wrapper textarea:focus {
-  outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 3px rgba(33,150,243,0.1);
-}
-
-.radio-group {
+.radio-options {
   display: flex;
-  gap: 20px;
+  gap: 24px;
 }
 
 .radio-label {
@@ -280,70 +530,78 @@ export default {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.radio-label:hover {
-  background: #f5f5f5;
-}
-
-.radio-label input[type="radio"] {
-  margin: 0;
 }
 
 .form-actions {
-  margin-top: 40px;
-  text-align: center;
+  margin-top: 32px;
+  text-align: right;
 }
 
-.save-btn {
-  padding: 12px 40px;
-  background: #2196F3;
+.submit-btn {
+  padding: 12px 32px;
+  background: #3182ce;
   color: white;
   border: none;
-  border-radius: 25px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+  transition: all 0.2s ease;
 }
 
-.save-btn:hover {
-  background: #1976D2;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(33,150,243,0.4);
+.submit-btn:hover {
+  background: #2c5282;
+  transform: translateY(-1px);
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+  .profile-nav {
+    width: 200px;
+  }
+  
+  .profile-content {
+    margin-left: 200px;
+    padding: 24px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-  .profile-card {
-    border-radius: 15px;
-  }
-
-  .profile-header {
-    padding: 30px 15px;
-  }
-
-  .avatar-wrapper {
-    width: 100px;
-    height: 100px;
-  }
-
-  .username {
-    font-size: 1.5rem;
-  }
-
-  .profile-form {
-    padding: 20px;
-  }
-
-  .radio-group {
+  .profile-container {
     flex-direction: column;
-    gap: 10px;
+  }
+  
+  .profile-nav {
+    width: 100%;
+    height: auto;
+    position: static;
+    padding: 16px;
+  }
+  
+  .profile-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+  
+  .stats-grid,
+  .info-row,
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

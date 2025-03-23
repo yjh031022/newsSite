@@ -66,7 +66,7 @@
           <a class="more-link">查看更多 <i class="fas fa-angle-right"></i></a>
         </div>
         <div class="news-list">
-          <div class="news-item" v-for="i in 5" :key="i">
+          <div class="news-item" v-for="i in 4" :key="i">
             <div class="news-item-content">
               <h4 class="news-title">新闻标题示例新闻标题示例</h4>
               <p class="news-brief">新闻简介内容新闻简介内容新闻简介内容...</p>
@@ -109,7 +109,7 @@
           <a class="more-link">全部热门 <i class="fas fa-angle-right"></i></a>
         </div>
         <div class="news-list">
-          <div class="hot-news-item" v-for="i in 6" :key="i">
+          <div class="hot-news-item" v-for="i in 4" :key="i">
             <span class="hot-rank" :class="i <= 3 ? 'top-rank' : ''">{{i}}</span>
             <div class="hot-news-content">
               <h4>热门新闻标题示例</h4>
@@ -229,7 +229,7 @@ export default {
 .home-container {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e8f4fd 100%);
   position: relative;
 }
 
@@ -242,14 +242,15 @@ export default {
   right: 0;
   bottom: 0;
   background-image:
-    linear-gradient(45deg, #ffffff20 25%, transparent 25%),
-    linear-gradient(-45deg, #ffffff20 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #ffffff20 75%),
-    linear-gradient(-45deg, transparent 75%, #ffffff20 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    linear-gradient(45deg, #2196F308 25%, transparent 25%),
+    linear-gradient(-45deg, #2196F308 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #2196F308 75%),
+    linear-gradient(-45deg, transparent 75%, #2196F308 75%);
+  background-size: 30px 30px;
+  background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.5;
 }
 
 /* 修改顶部导航栏背景 */
@@ -478,38 +479,52 @@ export default {
   justify-content: center;
   gap: 20px;
   padding: 15px 0;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(33, 150, 243, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .category-item {
-  padding: 5px 15px;
+  padding: 6px 16px;
   cursor: pointer;
   border-radius: 20px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  color: #555;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.5);
 }
 
-.category-item:hover,
-.category-item.active {
-  background: #2196F3;
+.category-item:hover {
+  background: linear-gradient(135deg, #2196F3, #64B5F6);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
 }
 
-.carousel-section {
+.category-item.active {
+  background: linear-gradient(135deg, #1976D2, #2196F3);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 12px rgba(33, 150, 243, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.carousel-section,
+.news-sections {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
-  background: transparent;
 }
 
 .carousel-container {
   width: 100%;
-  max-width: 1300px;
-  height: 500px;  /* 调整高度 */
+  height: 400px;
   position: relative;
   overflow: hidden;
-  margin: 0 auto;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -603,9 +618,17 @@ export default {
 }
 
 /* 响应式调整 */
+@media (max-width: 1240px) {
+  .carousel-section,
+  .news-sections {
+    max-width: calc(100% - 40px);
+    margin: 0 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .carousel-container {
-    height: 200px;
+    height: 300px;
   }
 
   .carousel-title {
@@ -618,48 +641,41 @@ export default {
     height: 30px;
     font-size: 16px;
   }
+
+  .carousel-section,
+  .news-sections {
+    padding: 10px;
+    margin: 0 10px;
+    max-width: calc(100% - 20px);
+  }
 }
 
 .news-sections {
   display: grid;
-  grid-template-columns: 2fr 1fr 300px;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 20px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .news-section {
+  height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ddd transparent;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 1px 3px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #f0f0f0;
 }
 
 .section-header h3 {
-  color: #333;
-  font-size: 1.2rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-header h3 i {
-  color: #2196F3;
+  font-size: 1.1rem;
 }
 
 .more-link {
@@ -681,17 +697,15 @@ export default {
   display: flex;
   padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  gap: 15px;
 }
 
-.news-item:hover {
-  background: rgba(248, 249, 250, 0.8);
+.news-item:last-child {
+  border-bottom: none;
 }
 
 .news-item-content {
   flex: 1;
-  padding-right: 15px;
 }
 
 .news-title {
@@ -737,19 +751,14 @@ export default {
 /* 猜你喜欢样式 */
 .news-card {
   margin-bottom: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
 }
 
-.news-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
 .news-card-image {
-  height: 160px;
+  height: 140px;
 }
 
 .news-card-image img {
@@ -760,38 +769,22 @@ export default {
 
 .news-card-content {
   padding: 12px;
+  background: white;
 }
 
 /* 热门栏目样式 */
 .hot-news-item {
   display: flex;
   align-items: center;
-  padding: 12px 0;
+  padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.hot-news-item:hover {
-  background: #f8f9fa;
-}
-
 .hot-rank {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e0e0e0;
-  color: #666;
-  border-radius: 4px;
-  margin-right: 12px;
-  font-weight: bold;
-}
-
-.hot-rank.top-rank {
-  background: #ff4d4f;
-  color: white;
+  min-width: 28px;
+  height: 28px;
+  margin-right: 15px;
 }
 
 .hot-news-content {
@@ -805,29 +798,25 @@ export default {
   line-height: 1.4;
 }
 
-/* 响应式调整 */
-@media (max-width: 1024px) {
-  .news-sections {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .news-section:last-child {
-    grid-column: span 2;
-  }
+/* 美化滚动条 */
+.news-section::-webkit-scrollbar {
+  width: 4px;
 }
 
-@media (max-width: 768px) {
-  .news-sections {
-    grid-template-columns: 1fr;
-  }
+.news-section::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
 
-  .news-section:last-child {
-    grid-column: span 1;
-  }
+.news-section::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-  .news-image {
-    width: 100px;
-    height: 70px;
-  }
+/* 添加hover效果 */
+.news-item:hover,
+.news-card:hover,
+.hot-news-item:hover {
+  transform: translateX(5px);
+  background: rgba(0,0,0,0.02);
 }
 </style>
