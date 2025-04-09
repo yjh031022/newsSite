@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {getToken} from "@/utils/auth";
 
 //查询单个新闻列表详情
 export function getNewsDetails(id) {
@@ -31,6 +32,7 @@ export function addLikeNews(data) {
   return request({
     url: "/appreciate/info/addAppreciateInfo",
     method: "post",
+    headers: { Authorization: "Bearer " + getToken() },
     params: data,
   });
 }
@@ -40,6 +42,7 @@ export function addMarkNews(data) {
   return request({
     url: "/news/label/addNewsLabel",
     method: "post",
+    headers: { Authorization: "Bearer " + getToken() },
     params: data,
   });
 }

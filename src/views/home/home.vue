@@ -95,20 +95,19 @@
           <h3><i class="fas fa-heart"></i> 猜你喜欢</h3>
           <a class="more-link">兴趣推荐</a>
         </div>
+
         <div class="news-list">
-          <div class="news-card" v-for="i in 4" :key="i">
+          <div class="news-card" v-for="(news, index) in recommendNews" :key="index" @click="goToDetail(news.id)">
             <div class="news-card-image">
-              <img src="https://picsum.photos/300/200" alt="新闻图片">
+              <img :src="getImgUrl(news.imgUrl)" :alt="news.newsTitle">
             </div>
             <div class="news-card-content">
-              <h4>推荐新闻标题示例</h4>
-              <p class="news-brief">推荐新闻简介内容...</p>
-              <div class="news-meta">
-                <span><i class="far fa-thumbs-up"></i> 88%匹配</span>
-              </div>
+              <h4> {{ news.newsTitle.length > 10 ? news.newsTitle.slice(0, 10) + '...' : news.newsTitle }}</h4>
+              <p class="news-brief"> {{ news.newsContent.length > 15 ? news.newsContent.slice(0, 15) + '..' : news.newsContent }}</p>
             </div>
           </div>
         </div>
+
       </div>
 
       <div class="news-section">
@@ -135,7 +134,7 @@
 </template>
 
 <script>
-import { getNewsTypeList, getHotColumn, getHotNewsTOP10, getTodayNewsTOP10, getSearchNews } from '../../api/home'
+import { getNewsTypeList, getHotColumn, getHotNewsTOP10, getTodayNewsTOP10, getSearchNews, getEveryDayNews } from '../../api/home'
 export default {
   name: 'Home',
   data() {
@@ -161,15 +160,7 @@ export default {
         }
         // ... 更多新闻
       ],
-      recommendNews: [
-        {
-          title: '推荐新闻标题',
-          brief: '推荐新闻简介',
-          image: '图片URL',
-          match: '匹配度'
-        }
-        // ... 更多推荐
-      ],
+      recommendNews: [],
       queryParams:{
         pageSize: 10,
         pageNum: 1
@@ -182,11 +173,19 @@ export default {
     this.getNewsCategory();
     this.getHotColumnList();
     this.getTodayNews()
+    this.getEveryDayNewsList()
   },
   mounted() {
     this.startCarousel()
   },
   methods: {
+    //每日推荐
+    getEveryDayNewsList() {
+      const userId = '1903269844354760706'
+      getEveryDayNews(userId).then(res => {
+        this.recommendNews = res.data
+      })
+    },
     //今日要闻
     getTodayNews() {
       getTodayNewsTOP10(this.queryParams).then(res => {

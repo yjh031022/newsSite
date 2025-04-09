@@ -43,3 +43,13 @@ export function getSearchNews(keyWords) {
     params: { keyWords },
   });
 }
+
+//每日推荐功能
+export function getEveryDayNews(userId) {
+  return request({
+    url: "/user/behavior/userSell",
+    method: "post",
+    params: { userId }
+  });
+}
+
