@@ -162,7 +162,7 @@ export default {
       ],
       recommendNews: [],
       queryParams:{
-        pageSize: 10,
+        pageSize: 11,
         pageNum: 1
       },
       columnId:'',
@@ -227,7 +227,7 @@ export default {
         console.log("columnId:", this.columnId)
         //获取热门栏目top10新闻
         const params = {
-          pageSize: 10,
+          pageSize: 21,
           pageNum: 1,
           columnId: this.columnId
         }
