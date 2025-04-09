@@ -42,7 +42,7 @@ export default {
         username: '',
         password: '',
       },
- 
+
     }
   },
   methods: {
@@ -56,6 +56,7 @@ export default {
       }
       login(params).then(res => {
         if (res.code === 200) {
+			// localStorage.setItem('userInfo', JSON.stringify(userInfo));
           this.$message({
             message: '登录成功',
             type: 'success'

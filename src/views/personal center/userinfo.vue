@@ -9,13 +9,13 @@
         <h3 class="nav-username">{{ userInfo.nickname || '用户昵称' }}</h3>
       </div>
       <nav class="nav-menu">
-        <div class="nav-item" 
+        <div class="nav-item"
              :class="{ active: currentView === 'profile' }"
              @click="currentView = 'profile'">
           <i class="fas fa-user"></i>
           <span>我的主页</span>
         </div>
-        <div class="nav-item" 
+        <div class="nav-item"
              :class="{ active: currentView === 'settings' }"
              @click="currentView = 'settings'">
           <i class="fas fa-cog"></i>
@@ -93,8 +93,8 @@
           <section class="activity-section">
             <h2 class="section-title">最近动态</h2>
             <div class="activity-list">
-              <div v-for="(activity, index) in recentActivities" 
-                   :key="index" 
+              <div v-for="(activity, index) in recentActivities"
+                   :key="index"
                    class="activity-card">
                 <i :class="activity.icon"></i>
                 <div class="activity-details">
@@ -570,12 +570,12 @@ export default {
   .profile-nav {
     width: 200px;
   }
-  
+
   .profile-content {
     margin-left: 200px;
     padding: 24px;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -585,19 +585,19 @@ export default {
   .profile-container {
     flex-direction: column;
   }
-  
+
   .profile-nav {
     width: 100%;
     height: auto;
     position: static;
     padding: 16px;
   }
-  
+
   .profile-content {
     margin-left: 0;
     padding: 16px;
   }
-  
+
   .stats-grid,
   .info-row,
   .form-grid {
