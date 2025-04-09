@@ -22,20 +22,20 @@
         </div>
 
         <div class="category-grid">
-          <div v-for="category in subscribedCategories" 
+          <div v-for="category in subscribedCategories"
                :key="category.id"
                class="category-card">
             <div class="category-icon">
               <i :class="category.icon"></i>
             </div>
             <div class="category-info">
-              <h3>{{ category.name }}</h3>
+              <h3>{{ category.columnName }}</h3>
               <p>{{ category.description }}</p>
             </div>
             <div class="category-actions">
-              <button class="setting-btn" @click="openSettings(category)">
-                <i class="fas fa-cog"></i>
-              </button>
+<!--              <button class="setting-btn" @click="openSettings(category)">-->
+<!--                <i class="fas fa-cog"></i>-->
+<!--              </button>-->
               <button class="unsubscribe-btn" @click="unsubscribe(category)">
                 <i class="fas fa-times"></i>
               </button>
@@ -44,33 +44,33 @@
         </div>
       </div>
 
-      <!-- 推荐订阅 -->
-      <div class="recommended-section">
-        <div class="section-header">
-          <h2>
-            <i class="fas fa-lightbulb"></i>
-            推荐订阅
-          </h2>
-        </div>
+<!--      &lt;!&ndash; 推荐订阅 &ndash;&gt;-->
+<!--      <div class="recommended-section">-->
+<!--        <div class="section-header">-->
+<!--          <h2>-->
+<!--            <i class="fas fa-lightbulb"></i>-->
+<!--            推荐订阅-->
+<!--          </h2>-->
+<!--        </div>-->
 
-        <div class="category-grid">
-          <div v-for="category in recommendedCategories" 
-               :key="category.id"
-               class="category-card recommended">
-            <div class="category-icon">
-              <i :class="category.icon"></i>
-            </div>
-            <div class="category-info">
-              <h3>{{ category.name }}</h3>
-              <p>{{ category.description }}</p>
-            </div>
-            <button class="subscribe-btn" @click="subscribe(category)">
-              <i class="fas fa-plus"></i>
-              订阅
-            </button>
-          </div>
-        </div>
-      </div>
+<!--        <div class="category-grid">-->
+<!--          <div v-for="category in recommendedCategories"-->
+<!--               :key="category.id"-->
+<!--               class="category-card recommended">-->
+<!--            <div class="category-icon">-->
+<!--              <i :class="category.icon"></i>-->
+<!--            </div>-->
+<!--            <div class="category-info">-->
+<!--              <h3>{{ category.name }}</h3>-->
+<!--              <p>{{ category.description }}</p>-->
+<!--            </div>-->
+<!--            <button class="subscribe-btn" @click="subscribe(category)">-->
+<!--              <i class="fas fa-plus"></i>-->
+<!--              订阅-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
 
     <!-- 设置弹窗 -->
@@ -101,14 +101,14 @@
           <div class="setting-item">
             <label>关键词过滤</label>
             <div class="keywords-input">
-              <input type="text" 
+              <input type="text"
                      v-model="newKeyword"
                      @keyup.enter="addKeyword"
                      placeholder="输入关键词后按回车添加">
             </div>
             <div class="keywords-list">
-              <span v-for="(keyword, index) in currentCategory.keywords" 
-                    :key="index" 
+              <span v-for="(keyword, index) in currentCategory.keywords"
+                    :key="index"
                     class="keyword-tag">
                 {{ keyword }}
                 <i class="fas fa-times" @click="removeKeyword(index)"></i>
@@ -126,29 +126,30 @@
 </template>
 
 <script>
+import { getSubscribe, deleteSubscribe } from '@/api/subscribe'
 export default {
   name: 'Subscribe',
   data() {
     return {
       subscribedCategories: [
-        {
-          id: 1,
-          name: '时政要闻',
-          description: '及时了解国内外重要新闻动态',
-          icon: 'fas fa-landmark',
-          notifications: true,
-          updateFrequency: 'realtime',
-          keywords: ['政策', '改革']
-        },
-        {
-          id: 2,
-          name: '科技创新',
-          description: '最新科技动态和创新资讯',
-          icon: 'fas fa-microchip',
-          notifications: true,
-          updateFrequency: 'daily',
-          keywords: ['AI', '创新']
-        }
+        // {
+        //   id: 1,
+        //   name: '时政要闻',
+        //   description: '及时了解国内外重要新闻动态',
+        //   icon: 'fas fa-landmark',
+        //   notifications: true,
+        //   updateFrequency: 'realtime',
+        //   keywords: ['政策', '改革']
+        // },
+        // {
+        //   id: 2,
+        //   name: '科技创新',
+        //   description: '最新科技动态和创新资讯',
+        //   icon: 'fas fa-microchip',
+        //   notifications: true,
+        //   updateFrequency: 'daily',
+        //   keywords: ['AI', '创新']
+        // }
         // 可以添加更多已订阅栏目
       ],
       recommendedCategories: [
@@ -171,7 +172,19 @@ export default {
       newKeyword: ''
     }
   },
+  created() {
+    this.getSubscribeList()
+  },
   methods: {
+    getSubscribeList() {
+      // const userId = localStorage.getItem('userId')
+      const userId = '1903269844354760706'
+      getSubscribe(userId).then(res => {
+        if (res.code === 200) {
+          this.subscribedCategories = res.data
+        }
+      })
+    },
     openSettings(category) {
       this.currentCategory = { ...category }
       this.showSettings = true
@@ -199,15 +212,16 @@ export default {
       this.recommendedCategories = this.recommendedCategories.filter(c => c.id !== category.id)
     },
     unsubscribe(category) {
-      if (confirm(`确定要取消订阅 "${category.name}" 栏目吗？`)) {
-        this.subscribedCategories = this.subscribedCategories.filter(c => c.id !== category.id)
-        this.recommendedCategories.push({
-          id: category.id,
-          name: category.name,
-          description: category.description,
-          icon: category.icon
-        })
-      }
+     console.log("category",category)
+      deleteSubscribe(category.id).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '取消订阅成功',
+            type: 'success'
+          })
+        }
+        this.getSubscribeList()
+      })
     },
     addKeyword() {
       if (this.newKeyword.trim() && !this.currentCategory.keywords.includes(this.newKeyword.trim())) {
@@ -549,7 +563,7 @@ select {
   .category-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-content {
     width: 95%;
   }

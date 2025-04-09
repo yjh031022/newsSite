@@ -4,14 +4,14 @@
       <!-- 新闻标题 -->
       <div class="title-section">
         <h1 class="news-title">{{ newsDetail.newsTitle }}</h1>
-        <button class="subscribe-btn" 
-                :class="{ subscribed: isSubscribed }" 
+        <button class="subscribe-btn"
+                :class="{ subscribed: isSubscribed }"
                 @click="toggleSubscribe">
           <i class="fas" :class="isSubscribed ? 'fa-check' : 'fa-plus'"></i>
           {{ isSubscribed ? '已订阅' : '订阅' }}
         </button>
       </div>
-      
+
       <!-- 新闻信息栏 -->
       <div class="news-info">
         <div class="info-left">
@@ -38,8 +38,8 @@
             <i class="far" :class="isLiked ? 'fas fa-heart' : 'far fa-heart'"></i>
             <span>{{ newsDetail.appreciateNum || 0 }}</span>
           </button>
-          <button class="action-btn interest-btn" 
-                  :class="{ 'interested': isInterested, 'not-interested': isNotInterested }" 
+          <button class="action-btn interest-btn"
+                  :class="{ 'interested': isInterested, 'not-interested': isNotInterested }"
                   @click="toggleInterest"
                   :title="getInterestTitle">
             <i class="fas" :class="getInterestIcon"></i>
@@ -60,14 +60,14 @@
             <span class="sort-item">最热</span>
           </div>
         </div>
-        
+
         <!-- 评论输入框 -->
         <div class="comment-input-section">
           <div class="input-header">
             <img class="user-avatar" src="https://picsum.photos/40/40" alt="用户头像">
             <div class="input-wrapper">
-              <textarea 
-                v-model="newComment" 
+              <textarea
+                v-model="newComment"
                 placeholder="写下你的评论..."
                 class="comment-input"
               ></textarea>
@@ -127,14 +127,17 @@
 </template>
 
 <script>
-import { getNewsInfo, addLikeNews, addMarkNews } from '../../api/details';
+import { getNewsInfo, addLikeNews, addMarkNews } from '@/api/details';
+import { addSubscribe,updateSubscribe } from "@/api/subscribe";
+
 export default {
   name: 'NewsDetail',
   data() {
     return {
-       source: 4,
-        publishTime: '',
-        views: 4,
+      columnId:'',
+      source: 4,
+      publishTime: '',
+      views: 4,
       loading: true,
       newsDetail: {},
       comments: [
@@ -186,7 +189,7 @@ export default {
     }
   },
   created() {
-  
+
     this.newsId = this.$route.params.id;
     console.log('News ID:', this.newsId);
     console.log(this.getCurrentTime())
@@ -199,7 +202,7 @@ export default {
     getCurrentTime() {
       const now = new Date();
       const year = now.getFullYear();
-      const month = (`0${now.getMonth() + 1}`).slice(-2); 
+      const month = (`0${now.getMonth() + 1}`).slice(-2);
       const day = (`0${now.getDate()}`).slice(-2);
       const hours = (`0${now.getHours()}`).slice(-2);
       const minutes = (`0${now.getMinutes()}`).slice(-2);
@@ -211,6 +214,7 @@ export default {
       getNewsInfo(this.newsId).then(res =>{
         this.loading = false;
         this.newsDetail = res.data;
+        this.columnId = res.data.columnId
         console.log("res",res)
       })
     },
@@ -296,7 +300,29 @@ export default {
 
     toggleSubscribe() {
       this.isSubscribed = !this.isSubscribed;
-      // 这里添加订阅/取消订阅的逻辑
+      console.log("isSubscribed:", this.isSubscribed);
+      if (this.isSubscribed) {
+        const params = {
+          userId: '1903269844354760706',
+          columnId: this.columnId
+        };
+        addSubscribe(params).then(res => {
+          console.log("add1:", res);
+          this.$message.success(res.msg);
+          this.isSubscribed = true;
+        });
+      } else {
+        const params = {
+          userId: '1903269844354760706',
+          columnId: this.columnId
+        }
+        updateSubscribe(params).then(res => {
+          console.log("up1:", res);
+          this.$message.success(res.msg);
+          this.isSubscribed = false;
+        });
+      }
+
     }
   }
 }
@@ -700,15 +726,15 @@ export default {
   .comments-header {
     padding: 0 12px;
   }
-  
+
   .comment-input-section {
     padding: 16px;
   }
-  
+
   .comments-list {
     padding: 0 12px;
   }
-  
+
   .comment-item {
     padding: 16px 0;
   }
