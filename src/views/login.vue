@@ -62,6 +62,7 @@ export default {
             type: 'success'
           });
           this.$router.replace('/home');
+          localStorage.setItem('username', this.formData.username);
         } else {
           alert('登录失败');
         }

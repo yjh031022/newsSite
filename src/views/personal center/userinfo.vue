@@ -5,21 +5,23 @@
       <div class="nav-header">
         <div class="avatar-container">
           <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="用户头像" class="avatar">
+          <div class="avatar-overlay">
+            <span class="username">{{ userInfo.nickname || '用户昵称' }}</span>
+          </div>
         </div>
-        <h3 class="nav-username">{{ userInfo.nickname || '用户昵称' }}</h3>
       </div>
       <nav class="nav-menu">
-        <div class="nav-item"
+        <div class="nav-item" 
              :class="{ active: currentView === 'profile' }"
              @click="currentView = 'profile'">
           <i class="fas fa-user"></i>
-          <span>我的主页</span>
+          <span>个人资料</span>
         </div>
-        <div class="nav-item"
+        <div class="nav-item" 
              :class="{ active: currentView === 'settings' }"
              @click="currentView = 'settings'">
           <i class="fas fa-cog"></i>
-          <span>个人设置</span>
+          <span>修改资料</span>
         </div>
       </nav>
     </aside>
@@ -27,79 +29,39 @@
     <!-- 右侧内容区 -->
     <main class="profile-content">
       <transition name="fade" mode="out-in">
-        <!-- 我的主页 -->
+        <!-- 个人资料展示 -->
         <div v-if="currentView === 'profile'" class="profile-overview">
-          <!-- 数据概览 -->
-          <section class="overview-section">
-            <div class="stats-grid">
-              <div class="stat-box">
-                <i class="fas fa-heart"></i>
-                <div class="stat-details">
-                  <h4>{{ userStats.likes }}</h4>
-                  <span>获赞</span>
-                </div>
-              </div>
-              <div class="stat-box">
-                <i class="fas fa-star"></i>
-                <div class="stat-details">
-                  <h4>{{ userStats.follows }}</h4>
-                  <span>关注</span>
-                </div>
-              </div>
-              <div class="stat-box">
-                <i class="fas fa-users"></i>
-                <div class="stat-details">
-                  <h4>{{ userStats.followers }}</h4>
-                  <span>粉丝</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 个人资料 -->
           <section class="info-section">
             <h2 class="section-title">个人资料</h2>
             <div class="info-content">
-              <div class="info-row">
-                <div class="info-col">
+              <div class="info-grid">
+                <div class="info-item">
                   <label>用户ID</label>
                   <span>{{ userInfo.userId }}</span>
                 </div>
-                <div class="info-col">
+                <div class="info-item">
+                  <label>用户名</label>
+                  <span>{{ userInfo.username }}</span>
+                </div>
+                <div class="info-item">
                   <label>昵称</label>
                   <span>{{ userInfo.nickname }}</span>
                 </div>
-              </div>
-              <div class="info-row">
-                <div class="info-col">
+                <div class="info-item">
                   <label>性别</label>
                   <span>{{ formatGender(userInfo.gender) }}</span>
                 </div>
-                <div class="info-col">
+                <div class="info-item">
                   <label>生日</label>
                   <span>{{ userInfo.birthday || '未设置' }}</span>
                 </div>
-              </div>
-              <div class="info-row">
-                <div class="info-col full">
-                  <label>个人简介</label>
-                  <p>{{ userInfo.bio || '这个人很懒，什么都没写~' }}</p>
+                <div class="info-item">
+                  <label>邮箱</label>
+                  <span>{{ userInfo.email || '未设置' }}</span>
                 </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 最近动态 -->
-          <section class="activity-section">
-            <h2 class="section-title">最近动态</h2>
-            <div class="activity-list">
-              <div v-for="(activity, index) in recentActivities"
-                   :key="index"
-                   class="activity-card">
-                <i :class="activity.icon"></i>
-                <div class="activity-details">
-                  <p>{{ activity.content }}</p>
-                  <time>{{ activity.time }}</time>
+                <div class="info-item full">
+                  <label>个人简介</label>
+                  <p class="bio">{{ userInfo.bio || '这个人很懒，什么都没写~' }}</p>
                 </div>
               </div>
             </div>
@@ -109,12 +71,16 @@
         <!-- 个人设置 -->
         <div v-else class="settings-view">
           <section class="settings-section">
-            <h2 class="section-title">个人资料设置</h2>
+            <h2 class="section-title">修改个人资料</h2>
             <form class="settings-form" @submit.prevent="saveProfile">
-              <!-- 头像设置 -->
               <div class="form-section">
-                <div class="avatar-setting">
-                  <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="头像">
+                <div class="avatar-upload">
+                  <div class="avatar-preview">
+                    <img :src="userInfo.avatar || 'https://picsum.photos/200'" alt="头像">
+                    <div class="avatar-overlay">
+                      <i class="fas fa-camera"></i>
+                    </div>
+                  </div>
                   <button type="button" class="upload-btn" @click="triggerAvatarUpload">
                     更换头像
                   </button>
@@ -122,15 +88,18 @@
                 </div>
               </div>
 
-              <!-- 基本信息 -->
               <div class="form-grid">
+                <div class="form-field">
+                  <label>登录用户名</label>
+                  <input type="text" v-model="userInfo.username" placeholder="请输入登录用户名">
+                </div>
                 <div class="form-field">
                   <label>昵称</label>
                   <input type="text" v-model="userInfo.nickname" placeholder="请输入昵称">
                 </div>
                 <div class="form-field">
                   <label>性别</label>
-                  <div class="radio-options">
+                  <div class="radio-group">
                     <label class="radio-label">
                       <input type="radio" v-model="userInfo.gender" value="male">
                       <span>男</span>
@@ -156,7 +125,10 @@
               </div>
 
               <div class="form-actions">
-                <button type="submit" class="submit-btn">保存修改</button>
+                <button type="submit" class="submit-btn">
+                  <i class="fas fa-save"></i>
+                  保存修改
+                </button>
               </div>
             </form>
           </section>
@@ -171,7 +143,7 @@ export default {
   name: 'UserInfo',
   data() {
     return {
-      currentView: 'profile', // 当前视图：profile/settings
+      currentView: 'profile',
       userInfo: {
         avatar: '',
         nickname: '示例用户',
@@ -206,7 +178,16 @@ export default {
       ]
     }
   },
+  created() {
+    this.getUserInfo()
+  },
   methods: {
+    getUserInfo() {
+      const loginUsername = localStorage.getItem('username')
+      if (loginUsername) {
+        this.userInfo.username = loginUsername
+      }
+    },
     formatGender(gender) {
       const genderMap = {
         male: '男',
@@ -229,7 +210,6 @@ export default {
       }
     },
     saveProfile() {
-      // 保存个人信息的逻辑
       console.log('保存的用户信息：', this.userInfo)
       alert('保存成功！')
     }
@@ -241,247 +221,243 @@ export default {
 .profile-container {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f6f9fc 0%, #f1f5f9 100%);
 }
 
 /* 左侧导航样式优化 */
 .profile-nav {
-  width: 220px;
+  width: 240px;
   background: white;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: fixed;
   height: 100vh;
-  padding: 32px 0;
+  padding: 40px 0;
 }
 
 .nav-header {
   padding: 0 24px;
   text-align: center;
+  margin-bottom: 40px;
 }
 
 .avatar-container {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 16px;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
   position: relative;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .avatar {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #e8f2ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.nav-username {
-  font-size: 16px;
-  color: #1a1a1a;
-  margin: 0 0 24px;
+.avatar-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  padding: 20px 10px 10px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.avatar-container:hover .avatar-overlay {
+  transform: translateY(0);
+}
+
+.avatar-container:hover .avatar {
+  transform: scale(1.1);
+}
+
+.username {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .nav-menu {
-  padding: 0 16px;
+  padding: 0 20px;
 }
 
 .nav-item {
-  padding: 12px 20px;
-  margin: 4px 0;
-  border-radius: 8px;
+  padding: 14px 24px;
+  margin: 8px 0;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
   color: #4a5568;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .nav-item:hover {
-  background: #f1f5f9;
-  color: #3182ce;
+  background: #f7fafc;
+  color: #2b6cb0;
+  transform: translateX(5px);
 }
 
 .nav-item.active {
-  background: #3182ce;
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.2);
 }
 
 /* 右侧内容区样式优化 */
 .profile-content {
   flex: 1;
-  margin-left: 220px;
+  margin-left: 240px;
+  padding: 40px;
+}
+
+/* 信息展示样式 */
+.info-section {
+  background: white;
+  border-radius: 16px;
   padding: 32px;
-}
-
-/* 数据概览样式 */
-.overview-section {
-  margin-bottom: 32px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.stat-box {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.stat-box i {
-  font-size: 24px;
-  color: #3182ce;
-}
-
-.stat-details h4 {
-  font-size: 24px;
-  color: #1a1a1a;
-  margin: 0 0 4px;
-}
-
-.stat-details span {
-  font-size: 14px;
-  color: #666;
-}
-
-/* 信息区域样式 */
-.info-section,
-.activity-section,
-.settings-section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
-  font-size: 18px;
-  color: #1a1a1a;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  font-size: 24px;
+  color: #2d3748;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+  position: relative;
 }
 
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(to right, #2b6cb0, #4299e1);
 }
 
-.info-row {
+.info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 32px;
 }
 
-.info-col {
+.info-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.info-col.full {
+.info-item.full {
   grid-column: 1 / -1;
 }
 
-.info-col label {
+.info-item label {
   font-size: 14px;
-  color: #666;
+  color: #718096;
+  font-weight: 500;
 }
 
-.info-col span,
-.info-col p {
-  color: #1a1a1a;
-}
-
-/* 活动列表样式 */
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.activity-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 8px;
-  background: #f8fafc;
-  transition: transform 0.2s ease;
-}
-
-.activity-card:hover {
-  transform: translateX(8px);
-}
-
-.activity-card i {
-  color: #3182ce;
+.info-item span,
+.info-item p {
+  color: #2d3748;
   font-size: 16px;
-}
-
-.activity-details {
-  flex: 1;
-}
-
-.activity-details p {
-  margin: 0 0 4px;
-  color: #1a1a1a;
-}
-
-.activity-details time {
-  font-size: 12px;
-  color: #666;
-}
-
-/* 设置表单样式 */
-.settings-form {
-  max-width: 720px;
-}
-
-.form-section {
-  margin-bottom: 32px;
-}
-
-.avatar-setting {
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  min-height: 45px;
   display: flex;
   align-items: center;
-  gap: 24px;
 }
 
-.avatar-setting img {
-  width: 80px;
-  height: 80px;
+.info-item p.bio {
+  min-height: 100px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 表单样式优化 */
+.settings-section {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
+.avatar-preview .avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.avatar-preview:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.avatar-overlay i {
+  color: white;
+  font-size: 24px;
+}
+
 .upload-btn {
-  padding: 8px 16px;
-  background: #3182ce;
+  padding: 10px 20px;
+  background: #2b6cb0;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
 .upload-btn:hover {
-  background: #2c5282;
+  background: #4299e1;
+  transform: translateY(-2px);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
+  margin-bottom: 32px;
 }
 
 .form-field {
@@ -497,22 +473,25 @@ export default {
 .form-field label {
   font-size: 14px;
   color: #4a5568;
+  font-weight: 500;
 }
 
 .form-field input,
 .form-field textarea {
-  padding: 10px 12px;
+  padding: 12px 16px;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  background: #f8fafc;
 }
 
 .form-field input:focus,
 .form-field textarea:focus {
-  border-color: #3182ce;
-  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
+  border-color: #2b6cb0;
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
   outline: none;
+  background: white;
 }
 
 .form-field textarea {
@@ -520,9 +499,10 @@ export default {
   resize: vertical;
 }
 
-.radio-options {
+.radio-group {
   display: flex;
   gap: 24px;
+  padding: 8px 0;
 }
 
 .radio-label {
@@ -530,33 +510,43 @@ export default {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.radio-label:hover {
+  background: #f8fafc;
 }
 
 .form-actions {
-  margin-top: 32px;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .submit-btn {
   padding: 12px 32px;
-  background: #3182ce;
+  background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .submit-btn:hover {
-  background: #2c5282;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.2);
 }
 
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .fade-enter-from,
@@ -576,8 +566,8 @@ export default {
     padding: 24px;
   }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -590,16 +580,14 @@ export default {
     width: 100%;
     height: auto;
     position: static;
-    padding: 16px;
+    padding: 20px;
   }
 
   .profile-content {
     margin-left: 0;
-    padding: 16px;
+    padding: 20px;
   }
 
-  .stats-grid,
-  .info-row,
   .form-grid {
     grid-template-columns: 1fr;
   }
