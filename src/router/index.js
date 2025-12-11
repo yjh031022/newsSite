@@ -14,6 +14,8 @@ const routes = [
     name: 'Login',
     component: () => import('../views/like.html')
   },
+
+
   {
     path: '/home',
     name: 'Home',
