@@ -15,7 +15,6 @@ const routes = [
     component: () => import('../views/like.html')
   },
 
-
   {
     path: '/home',
     name: 'Home',
