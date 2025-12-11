@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/',
     name: 'Login',
-    component: () => import('../views/show.html')
+    component: () => import('../views/like.html')
   },
   {
     path: '/home',
