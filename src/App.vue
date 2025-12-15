@@ -1,10 +1,5 @@
 <template>
   <div id="app">
-    <!-- <nav>
-      <router-link to="/">首页</router-link> |
-      <router-link to="/articles">新闻列表</router-link> |
-      <router-link to="/about">关于</router-link>
-    </nav> -->
     <!-- 替换原有的 HelloWorld 组件为路由视图 -->
     <router-view></router-view>
   </div>
