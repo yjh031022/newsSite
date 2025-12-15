@@ -161,7 +161,7 @@ void main() {
 }
 `,
       fragmentShader: `
-precision mediump float;
+precision highp float;  // ← 改成 highp，与 vertex 一致！
 
 uniform float uTime;
 uniform float uBeat;
@@ -272,7 +272,15 @@ void main() {
       this.createSnow()
       this.animate()
 
-      window.addEventListener('resize', this.onWindowResize)
+      // 强制刷新树
+      this.createParticles();
+
+      // 添加 resize 监听
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
     },
 
     onWindowResize() {
