@@ -9,10 +9,35 @@ import Subscribe from '@/views/subscribe/subscribe.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  {
+  { //圣诞树
     path: '/',
     name: 'Login',
     component: () => import('../views/chance.vue')
+  },
+  {  //粒子追踪游戏
+    path: '/game',
+    name: 'Game',
+    component: () => import('../views/game.vue')
+  },
+    { //3d粒子交互
+    path: '/signal',
+    name: 'Signal',
+    component: () => import('../views/signal.vue')
+  },
+  { //幻境
+    path: '/dream',
+    name: 'Dream',
+    component: () => import('../views/dream.vue')
+  },
+  {  //新年快乐倒计时
+    path: '/countdown',
+    name: 'Countdown',
+    component: () => import('../views/countdown.vue')
+  },
+  {
+  path: '/login',
+  name: 'Login',
+  component: () => import('../views/login.vue')
   },
 
   {
